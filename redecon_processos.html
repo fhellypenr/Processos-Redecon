@@ -1666,16 +1666,19 @@ function renderRelatorio(){
 document.querySelectorAll('.modal-backdrop').forEach(b=>{b.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})});
 document.getElementById('msg-popup').addEventListener('click',function(e){if(e.target===this)fecharMsgPopup()});
 document.getElementById('modal-alerta').addEventListener('click',function(e){if(e.target===this)fecharModalAlerta()});
-window._bootAposAuth = function(){
+window._bootAposAuth = async function(){
   if(window._fbPronto){
-    carregar();
+    await carregar();          // espera terminar de baixar tudo da nuvem
+    processarNovoDaQuery();    // só então cria o processo novo, se houver
   } else {
     // Firebase ainda carregando - usar localStorage enquanto isso
     try{const r=localStorage.getItem('redecon_v1');if(r)processos=JSON.parse(r)}catch(e){}
     renderLista();
-    window._fbProntoCallback = function(){ carregar(); };
+    window._fbProntoCallback = async function(){
+      await carregar();
+      processarNovoDaQuery();
+    };
   }
-  processarNovoDaQuery();
 };
 if(window._authUser) window._bootAposAuth();
 </script>
