@@ -751,7 +751,7 @@ function verificarTransferencia(){
 function abrirModalNovo(){atualizarSubtipos();document.getElementById('f-abertura').value=today();document.getElementById('modal-novo').classList.add('open')}
 function fecharModalNovo(){document.getElementById('modal-novo').classList.remove('open');['f-nome','f-grupo','f-obs'].forEach(id=>{document.getElementById(id).value=''})}
 
-function processarNovoDaQuery(){
+async function processarNovoDaQuery(){
   const params = new URLSearchParams(location.search);
   if(params.get('novo') !== '1') return;
   const nome = (params.get('nome')||'').trim();
@@ -797,6 +797,7 @@ function processarNovoDaQuery(){
   salvar();
   renderLista();
   history.replaceState({},'',location.pathname);
+  if(window._fbSalvar){ try{ await window._fbSalvar(processos); }catch(e){} }  // espera a nuvem confirmar antes de avisar
   avisarPai({tipo:'criado', nome: proc.nome, id: proc.id});
   if(!emIframe) abrirDetalhe(proc.id);
 }
