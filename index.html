@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Redecon Consórcios — Sistema</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Segoe UI',system-ui,-apple-system,Arial,sans-serif;background:#f4f4f4;color:#1a1a1f;min-height:100vh}
+  header{background:#0e0e13;color:#fff;padding:18px 28px;display:flex;align-items:center;justify-content:space-between}
+  header .brand{display:flex;align-items:center;gap:12px}
+  header .arc{width:30px;height:30px;border-radius:50%;border:5px solid #f23000;border-left-color:transparent;border-bottom-color:transparent;transform:rotate(-45deg)}
+  header h1{font-size:17px;font-weight:700}
+  main{max-width:900px;margin:0 auto;padding:60px 24px}
+  .lead{text-align:center;margin-bottom:44px}
+  .lead h2{font-size:26px;font-weight:800;margin-bottom:8px}
+  .lead p{color:#6b6b74;font-size:14.5px}
+  .cards{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  @media(max-width:640px){.cards{grid-template-columns:1fr}}
+  .card{background:#fff;border:1px solid #e3e3e8;border-radius:16px;padding:32px;text-decoration:none;color:inherit;transition:.15s;display:block}
+  .card:hover{border-color:#f23000;box-shadow:0 8px 24px rgba(0,0,0,.08);transform:translateY(-2px)}
+  .card .ic{width:48px;height:48px;border-radius:12px;background:#fdf3f0;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:16px}
+  .card h3{font-size:18px;font-weight:800;margin-bottom:6px}
+  .card p{font-size:13.5px;color:#6b6b74;line-height:1.5}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="brand"><div class="arc"></div><h1>Redecon Consórcios</h1></div>
+  <div id="userbox"></div>
+</header>
+
+<main>
+  <div class="lead">
+    <h2>O que você precisa fazer agora?</h2>
+    <p>Checklist, negativas e perguntas do processo, ou acompanhamento das etapas em andamento.</p>
+  </div>
+  <div class="cards">
+    <a class="card" href="painel-checklist-redecon.html">
+      <div class="ic">📋</div>
+      <h3>Checklist</h3>
+      <p>Pré-análise da matrícula, planilha de negativas, perguntas ao cliente e geração do checklist de documentos — imóvel e veículo.</p>
+    </a>
+    <a class="card" href="redecon_processos.html">
+      <div class="ic">🗂️</div>
+      <h3>Processos</h3>
+      <p>Acompanhamento das etapas de cada processo em andamento, do envio para análise até o pagamento ao vendedor.</p>
+    </a>
+  </div>
+</main>
+
+<script type="module">
+  import { requireAuth, userBadgeHTML } from './auth.js';
+  requireAuth().then(user=>{
+    document.getElementById('userbox').innerHTML = userBadgeHTML(user);
+  });
+</script>
+</body>
+</html>
