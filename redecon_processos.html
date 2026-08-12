@@ -8,20 +8,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
+  import { fbApp } from './auth.js';
   import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js";
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyDAq_DJ15fYlcSPkzi6DNnfk-1HPzB09pw",
-    authDomain: "redecon-processos.firebaseapp.com",
-    projectId: "redecon-processos",
-    storageBucket: "redecon-processos.firebasestorage.app",
-    messagingSenderId: "156637277637",
-    appId: "1:156637277637:web:c89642cd37b8a6b5a4afac"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
+  const db = getFirestore(fbApp);
 
   window._fbSalvar = async function(dados) {
     try {
