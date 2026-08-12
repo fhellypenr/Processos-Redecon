@@ -1510,7 +1510,7 @@ function gerar(){
   } else {
     bar += `<button class="btn btn-coral" onclick="printBloco('tudo','${nomeCapa.replace(/'/g,'')}')">🖨 Imprimir / Salvar PDF</button>`;
   }
-  bar += `<button class="btn btn-light" onclick="criarProcessoNoAcompanhamento('imovel')">🗂️ Criar processo no acompanhamento</button>`;
+  bar += `<button class="btn btn-light" onclick="criarProcessoNoAcompanhamento('imovel', this)">🗂️ Criar processo no acompanhamento</button>`;
   bar += '</div>';
   html = bar + html;
 
@@ -1739,7 +1739,7 @@ function gerarVeiculo(){
   bar += `<button class="btn btn-coral" onclick="printBloco('cons','${nomeCapa.replace(/'/g,'')}')">🖨 PDF do consorciado</button>`;
   bar += `<button class="btn btn-coral" onclick="printBloco('vend','Veiculo e vendedor')">🖨 PDF do veículo e vendedor</button>`;
   bar += `<button class="btn btn-light" onclick="printBloco('tudo','${nomeCapa.replace(/'/g,'')}')">Imprimir tudo</button>`;
-  bar += `<button class="btn btn-light" onclick="criarProcessoNoAcompanhamento('veiculo')">🗂️ Criar processo no acompanhamento</button>`;
+  bar += `<button class="btn btn-light" onclick="criarProcessoNoAcompanhamento('veiculo', this)">🗂️ Criar processo no acompanhamento</button>`;
   bar += '</div>';
   html = bar + html;
 
@@ -2245,7 +2245,7 @@ function slideResumoFin(modo, soRenda){
 }
 
 /* ===================== CRIAR PROCESSO NO ACOMPANHAMENTO ===================== */
-function criarProcessoNoAcompanhamento(modo){
+function criarProcessoNoAcompanhamento(modo, btnEl){
   const nome = document.getElementById('p_nome').value.trim();
   if(!nome){ alert('Preencha o nome do cliente no início do formulário antes de criar o processo.'); return; }
   const grupo = document.getElementById('p_grupo').value.trim();
@@ -2268,8 +2268,49 @@ function criarProcessoNoAcompanhamento(modo){
     subtipo = 'Compra';
   }
 
+  const btn = btnEl || null;
+  const textoOriginal = btn ? btn.textContent : '';
+  if(btn){ btn.disabled = true; btn.textContent = '⏳ Criando processo…'; }
+
   const params = new URLSearchParams({novo:'1', nome, tipo, subtipo, grupo:grupoCota, credito});
-  window.open('redecon_processos.html?'+params.toString(), '_blank');
+  _criarProcessoViaIframe(params, btn, textoOriginal);
+}
+
+function _criarProcessoViaIframe(params, btn, textoOriginal, forcado){
+  if(forcado) params.set('forcar','1');
+  const restaurarBotao = ()=>{ if(btn){ btn.disabled=false; btn.textContent=textoOriginal; } };
+  let resolvido = false;
+  const frame = document.createElement('iframe');
+  frame.style.cssText = 'position:fixed;width:1px;height:1px;opacity:0;pointer-events:none;left:-9999px';
+  frame.src = 'redecon_processos.html?'+params.toString();
+
+  const limite = setTimeout(()=>{
+    if(resolvido) return;
+    resolvido = true;
+    frame.remove();
+    restaurarBotao();
+    alert('Não foi possível confirmar a criação do processo (demorou demais para responder). Confira na aba Processos se ele foi criado, ou tente novamente.');
+  }, 12000);
+
+  function onMsg(e){
+    const d = e.data;
+    if(!d || d.source !== 'redecon-processos') return;
+    if(resolvido) return;
+    resolvido = true;
+    clearTimeout(limite);
+    window.removeEventListener('message', onMsg);
+    frame.remove();
+    restaurarBotao();
+    if(d.tipo === 'criado'){
+      alert('✅ Processo "'+d.nome+'" criado no acompanhamento.');
+    } else if(d.tipo === 'ja-existe'){
+      if(confirm('Já existe um processo em andamento com o nome "'+d.nome+'". Deseja criar outro processo mesmo assim?\n\n(Cancelar não cria nada.)')){
+        _criarProcessoViaIframe(params, null, null, true);
+      }
+    }
+  }
+  window.addEventListener('message', onMsg);
+  document.body.appendChild(frame);
 }
 
 /* ====== EMISSÃO AVULSA: seleção de telas ====== */
