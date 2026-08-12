@@ -247,11 +247,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 <body>
 <script type="module">
   import { requireAuth, userBadgeHTML } from './auth.js';
-  window._authReady = requireAuth();
-  window._authReady.then(user=>{
+  requireAuth().then(user=>{
     window._authUser = user;
     const box = document.getElementById('topbar-userbox');
     if(box) box.innerHTML = userBadgeHTML(user);
+    if(window._bootAposAuth) window._bootAposAuth();
   });
 </script>
 <div class="topbar">
@@ -1676,7 +1676,7 @@ function renderRelatorio(){
 document.querySelectorAll('.modal-backdrop').forEach(b=>{b.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})});
 document.getElementById('msg-popup').addEventListener('click',function(e){if(e.target===this)fecharMsgPopup()});
 document.getElementById('modal-alerta').addEventListener('click',function(e){if(e.target===this)fecharModalAlerta()});
-window._authReady.then(()=>{
+window._bootAposAuth = function(){
   if(window._fbPronto){
     carregar();
   } else {
@@ -1686,7 +1686,8 @@ window._authReady.then(()=>{
     window._fbProntoCallback = function(){ carregar(); };
   }
   processarNovoDaQuery();
-});
+};
+if(window._authUser) window._bootAposAuth();
 </script>
 </body>
 </html>
