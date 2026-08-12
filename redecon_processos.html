@@ -27,6 +27,25 @@
     return null;
   };
 
+  window._fbSalvarTemplates = async function(chave, modelo) {
+    try {
+      await setDoc(doc(db, "dados", "templates"), { [chave]: JSON.stringify(modelo) }, { merge: true });
+    } catch(e) { console.error("Erro ao salvar modelo:", e); }
+  };
+
+  window._fbCarregarTemplates = async function() {
+    try {
+      const snap = await getDoc(doc(db, "dados", "templates"));
+      if (snap.exists()) {
+        const raw = snap.data();
+        const out = {};
+        Object.keys(raw).forEach(k => { try { out[k] = JSON.parse(raw[k]); } catch(e) {} });
+        return out;
+      }
+    } catch(e) { console.error("Erro ao carregar modelos:", e); }
+    return null;
+  };
+
   window._fbPronto = true;
   if (window._fbProntoCallback) window._fbProntoCallback();
 </script>
@@ -355,6 +374,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
       <span class="copied-tag" id="msg-copied">Copiado!</span>
       <div style="display:flex;gap:8px">
         <button class="btn btn-secondary btn-sm" onclick="fecharMsgPopup()">Fechar</button>
+        <button class="btn btn-secondary btn-sm" onclick="salvarMsgEtapa()"><i class="ti ti-device-floppy"></i> Salvar nesta etapa</button>
         <button class="btn btn-primary btn-sm" onclick="copiarMsg()"><i class="ti ti-copy"></i> Copiar</button>
       </div>
     </div>
@@ -578,6 +598,8 @@ function abrirMsgEtapa(idx){
     document.getElementById('msg-popup-abas').style.display='none';
     const texto=et.msg.replace(/\[Nome\]/g,primeiro);
     document.getElementById('msg-popup-text').value=texto;
+    document.getElementById('msg-popup-text').dataset.etapaIdx=idx;
+    delete document.getElementById('msg-popup-text').dataset.varianteIdx;
   }
   document.getElementById('msg-popup').classList.add('open');
 }
@@ -586,6 +608,7 @@ function selecionarAba(varIdx, total, etIdx){
   const primeiro=pSel.nome.split(' ')[0];
   const texto=et.msgVariantes[varIdx].texto.replace(/\[Nome\]/g,primeiro);
   document.getElementById('msg-popup-text').value=texto;
+  document.getElementById('msg-popup-text').dataset.varianteIdx=varIdx;
   document.querySelectorAll('.msg-aba').forEach((b,i)=>{
     b.classList.toggle('ativa',i===varIdx);
   });
@@ -604,6 +627,78 @@ function copiarMsg(){
     el.classList.add('show');
     setTimeout(()=>el.classList.remove('show'),2000);
   });
+}
+
+/* ===================== MENSAGEM: SALVAR EDIÇÃO NA ETAPA ===================== */
+function salvarMsgEtapa(){
+  const ta = document.getElementById('msg-popup-text');
+  const idx = ta.dataset.etapaIdx;
+  if(idx === undefined || idx === ''){ fecharMsgPopup(); return; } // popup aberto por outro caminho (sem etapa associada)
+  const et = pSel.etapas[idx];
+  if(!et){ fecharMsgPopup(); return; }
+  const varIdx = ta.dataset.varianteIdx;
+  if(et.msg === 'VARIANTES' && et.msgVariantes && varIdx !== undefined && varIdx !== ''){
+    et.msgVariantes[varIdx].texto = ta.value;
+  } else {
+    et.msg = ta.value;
+  }
+  salvar();
+  renderDetalhe();
+  fecharMsgPopup();
+  alert('Mensagem salva nesta etapa deste processo.\n\nSe quiser que ela também valha para os PRÓXIMOS processos, use o botão "⭐ Salvar etapas como modelo padrão" na tela do processo.');
+}
+
+/* ===================== MODELOS PADRÃO DE ETAPAS ===================== */
+// Sobrescreve, em memória, os arrays-modelo usados para criar novos processos.
+function _templateKeyPara(tipo, subtipo){
+  if(tipo==='Imóvel') return subtipo==='Quitação de financiamento + compra' ? 'ImovelQuitacaoCompra' : 'Imovel';
+  return subtipo==='Substituição de garantia' ? 'VeiculoSubstGarantia' : 'Veiculo';
+}
+function _templateArrayPara(chave){
+  return {ImovelQuitacaoCompra: ETAPAS_QUITACAO_COMPRA, Imovel: ETAPAS_IMOVEL,
+          VeiculoSubstGarantia: ETAPAS_SUBST_GARANTIA_VEICULO, Veiculo: ETAPAS_VEICULO}[chave];
+}
+async function carregarTemplates(){
+  if(!window._fbCarregarTemplates) return;
+  try{
+    const remoto = await window._fbCarregarTemplates();
+    if(!remoto) return;
+    Object.keys(remoto).forEach(chave=>{
+      const arr = _templateArrayPara(chave);
+      if(arr && Array.isArray(remoto[chave])){
+        arr.length = 0;
+        remoto[chave].forEach(e=>arr.push(e));
+      }
+    });
+  }catch(e){ console.error('Erro ao carregar modelos de etapas:', e); }
+}
+async function salvarComoModeloPadrao(){
+  if(!pSel) return;
+  const chave = _templateKeyPara(pSel.tipo, pSel.subtipo);
+  const rotulo = {Imovel:'Imóvel (todos os subtipos, exceto quitação + compra)', ImovelQuitacaoCompra:'Imóvel — Quitação de financiamento + compra',
+                  Veiculo:'Veículo (todos os subtipos, exceto substituição de garantia)', VeiculoSubstGarantia:'Veículo — Substituição de garantia'}[chave];
+  const nomesEtapas = pSel.etapas.map(e=>e.nome).join('\n • ');
+  const ok = confirm('Isso vai atualizar o MODELO PADRÃO de "'+rotulo+'".\n\n'
+    +'Todo processo novo desse tipo passará a nascer com estas etapas e mensagens:\n • '+nomesEtapas
+    +'\n\nProcessos já existentes não são alterados. Confirma?');
+  if(!ok) return;
+
+  // captura só o que é "modelo" (nome, tipo, mensagem) -- sem datas/comentários, que são de cada processo
+  const modelo = pSel.etapas.map(e=>{
+    const base = {nome:e.nome, tipo:e.tipo};
+    if(e.msg) base.msg = e.msg;
+    if(e.msgVariantes) base.msgVariantes = e.msgVariantes;
+    return base;
+  });
+
+  const arr = _templateArrayPara(chave);
+  arr.length = 0;
+  modelo.forEach(e=>arr.push(e));
+
+  if(window._fbSalvarTemplates){
+    try{ await window._fbSalvarTemplates(chave, modelo); }catch(e){ console.error(e); }
+  }
+  alert('✅ Modelo padrão de "'+rotulo+'" atualizado. Os próximos processos desse tipo já vão nascer assim.');
 }
 async function carregar(){
   // Tentar carregar do Firebase primeiro
@@ -782,11 +877,16 @@ async function processarNovoDaQuery(){
     ? (subtipo==='Quitação de financiamento + compra' ? ETAPAS_QUITACAO_COMPRA : ETAPAS_IMOVEL)
     : (subtipo==='Substituição de garantia' ? ETAPAS_SUBST_GARANTIA_VEICULO : ETAPAS_VEICULO);
   const hoje = today();
-  const etapas = tmpl.map(e => ({
-    nome: e.nome, tipo: e.tipo,
-    dataVal: (e.nome==='Checklist de documentos') ? hoje : '',
-    dataInicio:'', dataFim:'', responsavel:'Redecon', comentarios:[], custom:false, msg: e.msg||''
-  }));
+  const etapas = tmpl.map(e => {
+    const et = {
+      nome: e.nome, tipo: e.tipo,
+      dataVal: (e.nome==='Checklist de documentos') ? hoje : '',
+      dataInicio:'', dataFim:'', responsavel:'Redecon', comentarios:[], custom:false,
+      msg: e.msgVariantes ? 'VARIANTES' : (e.msg||'')
+    };
+    if(e.msgVariantes) et.msgVariantes = JSON.parse(JSON.stringify(e.msgVariantes));
+    return et;
+  });
   const proc = {
     id: Date.now(), nome, tipo, subtipo, grupo,
     obs: 'Processo criado a partir do checklist.',
@@ -811,7 +911,7 @@ function criarProcesso(){
   const obs=document.getElementById('f-obs').value.trim();
   const abertura=document.getElementById('f-abertura').value.trim()||today();
   const tmpl=tipo==='Imóvel'?(subtipo==='Quitação de financiamento + compra'?ETAPAS_QUITACAO_COMPRA:ETAPAS_IMOVEL):(subtipo==='Substituição de garantia'?ETAPAS_SUBST_GARANTIA_VEICULO:ETAPAS_VEICULO);
-  const etapas=tmpl.map(e=>({nome:e.nome,tipo:e.tipo,dataVal:'',dataInicio:'',dataFim:'',responsavel:'Redecon',comentarios:[],custom:false,msg:e.msg||''}));
+  const etapas=tmpl.map(e=>{const et={nome:e.nome,tipo:e.tipo,dataVal:'',dataInicio:'',dataFim:'',responsavel:'Redecon',comentarios:[],custom:false,msg:e.msgVariantes?'VARIANTES':(e.msg||'')};if(e.msgVariantes)et.msgVariantes=JSON.parse(JSON.stringify(e.msgVariantes));return et;});
   const transferencia=document.getElementById('f-transferencia').value.trim();
   const etapasFiltradas=etapas;
   const proc={id:Date.now(),nome,tipo,subtipo,grupo,obs,transferencia:transferencia||'',credito:'',dataCriacao:abertura,concluido:false,dataConclusao:'',etapas:etapasFiltradas};
@@ -1063,7 +1163,8 @@ function renderDetalhe(){
   const br=document.getElementById('detalhe-backrow');
   br.innerHTML=`<button class="btn btn-secondary" onclick="voltarRelatorio()"><i class="ti ti-arrow-left"></i> Voltar ao resumo</button>
     <button class="btn btn-secondary btn-sm" onclick="verRelatorio()"><i class="ti ti-file-text"></i> Ver relatório</button>
-    ${!p.concluido?`<button class="btn btn-secondary btn-sm" onclick="abrirModalEtapa()"><i class="ti ti-plus"></i> Etapa personalizada</button>`:''}`;
+    ${!p.concluido?`<button class="btn btn-secondary btn-sm" onclick="abrirModalEtapa()"><i class="ti ti-plus"></i> Etapa personalizada</button>`:''}
+    <button class="btn btn-secondary btn-sm" onclick="salvarComoModeloPadrao()" title="As próximas etapas + mensagens deste processo passam a valer como padrão para novos processos do mesmo tipo"><i class="ti ti-star"></i> Salvar etapas como modelo padrão</button>`;
 
   document.getElementById('detalhe-conteudo').innerHTML=`<div class="detail-card"><div class="detail-top"><div><div class="detail-title">${nomeExibicao(p)}</div><div class="detail-sub">${p.tipo} · ${p.subtipo}${p.grupo?' · '+p.grupo:''} · Aberto em ${p.dataCriacao}</div></div><span class="badge ${p.cancelado?'badge-cancelado':p.concluido?'badge-concluido':p.tipo==='Imóvel'?'badge-imovel':'badge-veiculo'}">${p.cancelado?'🚫 Cancelado':p.concluido?'✅ Concluído':p.tipo==='Imóvel'?'🏠 Imóvel':'🚗 Veículo'}</span></div><div class="detail-body">${p.cancelado?`<div style="background:#fff0f0;border:1px solid #fcc;border-radius:var(--radius);padding:12px 14px;margin-bottom:1.25rem"><div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">🚫 Processo cancelado em ${p.dataCancelamento||'—'}${diasCorridos(p.dataCriacao,p.dataCancelamento)!==null?' · '+diasCorridos(p.dataCriacao,p.dataCancelamento)+' dias corridos':''}</div><div style="font-size:13px;color:var(--text)">${p.motivoCancelamento||''}</div></div>`:''}${transferenciaWrap}<div class="section-head">Etapas do processo</div>${etapasHtml}${creditoWrap}<div class="bottom-acoes">${p.cancelado?`<button class="btn btn-secondary btn-sm" onclick="reativarProcesso()"><i class="ti ti-refresh"></i> Reativar processo</button>`:(p.concluido?`<button class="btn btn-secondary btn-sm" onclick="reabrirProcesso()"><i class="ti ti-lock-open"></i> Reabrir para edição</button>`:`<button class="btn btn-success btn-sm" onclick="confirmarConclusao()"><i class="ti ti-flag-check"></i> Concluir processo</button><button class="btn btn-danger btn-sm" onclick="abrirModalCancelar()"><i class="ti ti-ban"></i> Cancelar processo</button>`)}<button class="btn btn-danger btn-sm" onclick="excluirProcesso()"><i class="ti ti-trash"></i> Excluir</button></div></div></div>`;
 }
@@ -1679,14 +1780,14 @@ document.getElementById('msg-popup').addEventListener('click',function(e){if(e.t
 document.getElementById('modal-alerta').addEventListener('click',function(e){if(e.target===this)fecharModalAlerta()});
 window._bootAposAuth = async function(){
   if(window._fbPronto){
-    await carregar();          // espera terminar de baixar tudo da nuvem
+    await Promise.all([carregar(), carregarTemplates()]);  // dados + modelos de etapas atualizados
     processarNovoDaQuery();    // só então cria o processo novo, se houver
   } else {
     // Firebase ainda carregando - usar localStorage enquanto isso
     try{const r=localStorage.getItem('redecon_v1');if(r)processos=JSON.parse(r)}catch(e){}
     renderLista();
     window._fbProntoCallback = async function(){
-      await carregar();
+      await Promise.all([carregar(), carregarTemplates()]);
       processarNovoDaQuery();
     };
   }
