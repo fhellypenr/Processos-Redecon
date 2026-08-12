@@ -402,12 +402,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 </div>
 <div id="modal-salvar-template" class="modal-backdrop">
   <div class="modal">
-    <div class="modal-title">⭐ Salvar etapas como modelo padrão</div>
+    <div class="modal-title">⭐ Salvar esta etapa como padrão</div>
     <div class="field" style="font-size:12.5px;color:var(--text3);margin-bottom:12px">
-      Escolha para quais tipos de utilização essas etapas (nomes + mensagens) devem virar o padrão. Só afeta processos criados a partir de agora — os que já existem não mudam.
+      Escolha para quais tipos de utilização essa etapa (nome + mensagem) deve virar o padrão. Só afeta processos criados a partir de agora — os que já existem não mudam. As demais etapas do modelo continuam como estão.
     </div>
-    <div class="field"><label>Etapas que serão salvas</label>
-      <div id="mst-preview" style="font-size:12px;color:var(--text2);background:var(--surface2);border-radius:var(--radius);padding:10px 12px;max-height:120px;overflow-y:auto"></div>
+    <div class="field"><label>Etapa</label>
+      <div id="mst-preview" style="font-size:12px;color:var(--text2);background:var(--surface2);border-radius:var(--radius);padding:10px 12px"></div>
     </div>
     <div class="field"><label>Aplicar a</label>
       <div id="mst-lista" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto"></div>
@@ -677,7 +677,7 @@ function salvarMsgEtapa(){
   salvar();
   renderDetalhe();
   fecharMsgPopup();
-  alert('Mensagem salva nesta etapa deste processo.\n\nSe quiser que ela também valha para os PRÓXIMOS processos, use o botão "⭐ Salvar etapas como modelo padrão" na tela do processo.');
+  alert('Mensagem salva nesta etapa deste processo.\n\nSe quiser que ela também valha para os PRÓXIMOS processos, use o botão "⭐ salvar como padrão" logo ao lado, nesta mesma etapa.');
 }
 
 /* ===================== MODELOS PADRÃO DE ETAPAS (por tipo + subtipo) ===================== */
@@ -702,10 +702,13 @@ async function carregarTemplates(){
   }catch(e){ console.error('Erro ao carregar modelos de etapas:', e); }
 }
 
-function salvarComoModeloPadrao(){
+let _mstEtapaIdx = undefined;
+function salvarEtapaComoModelo(idx){
   if(!pSel) return;
+  _mstEtapaIdx = idx;
+  const et = pSel.etapas[idx];
   const subtipos = SUBTIPOS[pSel.tipo] || [];
-  document.getElementById('mst-preview').textContent = pSel.etapas.map(e=>e.nome).join(' • ');
+  document.getElementById('mst-preview').textContent = et.nome;
   document.getElementById('mst-lista').innerHTML = subtipos.map(s=>
     `<label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0">
       <input type="checkbox" value="${s}" ${s===pSel.subtipo?'checked':''}> ${s}
@@ -715,28 +718,33 @@ function salvarComoModeloPadrao(){
 }
 function fecharModalSalvarTemplate(){
   document.getElementById('modal-salvar-template').classList.remove('open');
+  _mstEtapaIdx = undefined;
 }
 async function confirmarSalvarTemplate(){
   const marcados = [...document.querySelectorAll('#mst-lista input:checked')].map(el=>el.value);
   if(!marcados.length){ alert('Selecione ao menos um tipo de utilização.'); return; }
-  if(!pSel) return;
+  if(!pSel || _mstEtapaIdx===undefined) return;
 
-  // captura só o que é "modelo" (nome, tipo, mensagem) -- sem datas/comentários, que são de cada processo
-  const modelo = pSel.etapas.map(e=>{
-    const base = {nome:e.nome, tipo:e.tipo};
-    if(e.msg) base.msg = e.msg;
-    if(e.msgVariantes) base.msgVariantes = e.msgVariantes;
-    return base;
-  });
+  const et = pSel.etapas[_mstEtapaIdx];
+  const entrada = {nome:et.nome, tipo:et.tipo};
+  if(et.msg) entrada.msg = et.msg;
+  if(et.msgVariantes) entrada.msgVariantes = et.msgVariantes;
 
   const tipo = pSel.tipo;
-  marcados.forEach(subtipo=>{ TEMPLATES_OVERRIDE[_templateChave(tipo, subtipo)] = modelo; });
-
-  if(window._fbSalvarTemplates){
-    try{ await window._fbSalvarTemplates(tipo, marcados, modelo); }catch(e){ console.error(e); }
+  for(const subtipo of marcados){
+    const chave = _templateChave(tipo, subtipo);
+    // parte do modelo atual daquele subtipo (customizado ou o padrão de fábrica) e só atualiza/adiciona ESTA etapa
+    const base = TEMPLATES_OVERRIDE[chave] || _templateBase(tipo, subtipo);
+    const arr = base.map(e=>({...e}));
+    const idxExistente = arr.findIndex(e=>e.nome===entrada.nome);
+    if(idxExistente>=0) arr[idxExistente]=entrada; else arr.push(entrada);
+    TEMPLATES_OVERRIDE[chave] = arr;
+    if(window._fbSalvarTemplates){
+      try{ await window._fbSalvarTemplates(tipo, [subtipo], arr); }catch(e){ console.error(e); }
+    }
   }
   fecharModalSalvarTemplate();
-  alert('✅ Modelo salvo para: '+marcados.join(', ')+'.\n\nOs próximos processos criados com esses tipos de utilização já vão nascer assim. Processos já existentes não mudam.');
+  alert('✅ Etapa "'+et.nome+'" salva como padrão para: '+marcados.join(', ')+'.\n\nOs próximos processos com esses tipos de utilização já vão nascer com ela. As outras etapas do modelo não foram alteradas.');
 }
 async function carregar(){
   // Tentar carregar do Firebase primeiro
@@ -1158,6 +1166,7 @@ function renderDetalhe(){
     return`<div class="etapa-block ${st.cls}${et.custom?' custom':''}"><div class="etapa-top"><div class="etapa-nome">${et.nome} ${customTag}<span class="status-pill ${st.pill}">${st.label}</span></div>${removeBtn}</div>${renderCampos(et,i)}<div class="resp-row"><label>Responsável:</label><select ${p.concluido?'disabled':''} onchange="pSel.etapas[${i}].responsavel=this.value;salvar()">${['Redecon','Cliente','Administradora','Cartório','Banco/Financeira','Prefeitura','Outro'].map(r=>`<option ${et.responsavel===r?'selected':''}>${r}</option>`).join('')}</select></div>${et.comentarios.length?'<div class="comment-list">'+comsHtml+'</div>':''} ${!p.concluido?`<div class="etapa-acoes">
         <button class="add-comment-btn" onclick="abrirComentario(${i})"><i class="ti ti-message-plus" style="font-size:13px"></i> adicionar comentário</button>
         ${'<button class="msg-btn" onclick="abrirMsgEtapa('+i+')"><i class="ti ti-brand-whatsapp" style="font-size:12px"></i> '+(et.msg?'mensagem':'+ criar mensagem')+'</button>'}
+        ${!p.concluido?'<button class="link-btn" onclick="salvarEtapaComoModelo('+i+')" title="Salvar esta etapa (nome + mensagem) como padrão para novos processos"><i class="ti ti-star" style="font-size:12px"></i> salvar como padrão</button>':''}
         ${et.alerta?'<button class="btn-alerta-rem" onclick="removerAlerta('+i+')" title="Remover alerta">✕ alerta</button>':'<button class="btn-alerta-neg" onclick="abrirModalAlerta('+i+')">⚠ alerta</button>'}
       </div>`:''}
       ${et.alerta?'<div class="'+(et.alerta.tipo==='neg'?'alerta-neg':'alerta-pos')+'"><span class="alerta-icon">'+(et.alerta.tipo==='neg'?'⚠️':'✅')+'</span><span>'+et.alerta.texto+'</span></div>':''}</div>`;
@@ -1199,8 +1208,7 @@ function renderDetalhe(){
   const br=document.getElementById('detalhe-backrow');
   br.innerHTML=`<button class="btn btn-secondary" onclick="voltarRelatorio()"><i class="ti ti-arrow-left"></i> Voltar ao resumo</button>
     <button class="btn btn-secondary btn-sm" onclick="verRelatorio()"><i class="ti ti-file-text"></i> Ver relatório</button>
-    ${!p.concluido?`<button class="btn btn-secondary btn-sm" onclick="abrirModalEtapa()"><i class="ti ti-plus"></i> Etapa personalizada</button>`:''}
-    <button class="btn btn-secondary btn-sm" onclick="salvarComoModeloPadrao()" title="As próximas etapas + mensagens deste processo passam a valer como padrão para novos processos do mesmo tipo"><i class="ti ti-star"></i> Salvar etapas como modelo padrão</button>`;
+    ${!p.concluido?`<button class="btn btn-secondary btn-sm" onclick="abrirModalEtapa()"><i class="ti ti-plus"></i> Etapa personalizada</button>`:''}`;
 
   document.getElementById('detalhe-conteudo').innerHTML=`<div class="detail-card"><div class="detail-top"><div><div class="detail-title">${nomeExibicao(p)}</div><div class="detail-sub">${p.tipo} · ${p.subtipo}${p.grupo?' · '+p.grupo:''} · Aberto em ${p.dataCriacao}</div></div><span class="badge ${p.cancelado?'badge-cancelado':p.concluido?'badge-concluido':p.tipo==='Imóvel'?'badge-imovel':'badge-veiculo'}">${p.cancelado?'🚫 Cancelado':p.concluido?'✅ Concluído':p.tipo==='Imóvel'?'🏠 Imóvel':'🚗 Veículo'}</span></div><div class="detail-body">${p.cancelado?`<div style="background:#fff0f0;border:1px solid #fcc;border-radius:var(--radius);padding:12px 14px;margin-bottom:1.25rem"><div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">🚫 Processo cancelado em ${p.dataCancelamento||'—'}${diasCorridos(p.dataCriacao,p.dataCancelamento)!==null?' · '+diasCorridos(p.dataCriacao,p.dataCancelamento)+' dias corridos':''}</div><div style="font-size:13px;color:var(--text)">${p.motivoCancelamento||''}</div></div>`:''}${transferenciaWrap}<div class="section-head">Etapas do processo</div>${etapasHtml}${creditoWrap}<div class="bottom-acoes">${p.cancelado?`<button class="btn btn-secondary btn-sm" onclick="reativarProcesso()"><i class="ti ti-refresh"></i> Reativar processo</button>`:(p.concluido?`<button class="btn btn-secondary btn-sm" onclick="reabrirProcesso()"><i class="ti ti-lock-open"></i> Reabrir para edição</button>`:`<button class="btn btn-success btn-sm" onclick="confirmarConclusao()"><i class="ti ti-flag-check"></i> Concluir processo</button><button class="btn btn-danger btn-sm" onclick="abrirModalCancelar()"><i class="ti ti-ban"></i> Cancelar processo</button>`)}<button class="btn btn-danger btn-sm" onclick="excluirProcesso()"><i class="ti ti-trash"></i> Excluir</button></div></div></div>`;
 }
