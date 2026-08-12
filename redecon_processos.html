@@ -762,10 +762,19 @@ function processarNovoDaQuery(){
   const grupo = params.get('grupo') || '';
   const credito = params.get('credito') || '';
 
+  const emIframe = (window.parent !== window);
+  const forcar = params.get('forcar') === '1';
+  const avisarPai = (msg) => { if(emIframe){ try{ window.parent.postMessage(Object.assign({source:'redecon-processos'}, msg), '*'); }catch(e){} } };
+
   const existente = processos.find(p => p.nome.trim().toLowerCase()===nome.toLowerCase() && !p.concluido && !p.cancelado);
-  if(existente){
-    const continuar = confirm('Já existe um processo em andamento com o nome "'+nome+'". Deseja criar outro processo mesmo assim?\n\n(Cancelar abre o processo já existente.)');
+  if(existente && !forcar){
     history.replaceState({},'',location.pathname);
+    if(emIframe){
+      // Dentro do checklist: não perguntamos aqui, devolvemos a decisão para a página que chamou.
+      avisarPai({tipo:'ja-existe', nome: existente.nome, id: existente.id});
+      return;
+    }
+    const continuar = confirm('Já existe um processo em andamento com o nome "'+nome+'". Deseja criar outro processo mesmo assim?\n\n(Cancelar abre o processo já existente.)');
     if(!continuar){ abrirDetalhe(existente.id); return; }
   }
 
@@ -788,7 +797,8 @@ function processarNovoDaQuery(){
   salvar();
   renderLista();
   history.replaceState({},'',location.pathname);
-  abrirDetalhe(proc.id);
+  avisarPai({tipo:'criado', nome: proc.nome, id: proc.id});
+  if(!emIframe) abrirDetalhe(proc.id);
 }
 
 function criarProcesso(){
