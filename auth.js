@@ -2,7 +2,8 @@
 // Usado por index.html, redecon_processos.html e painel-checklist-redecon.html
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js";
 import {
-  getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
+  getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut,
+  setPersistence, browserSessionPersistence
 } from "https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -16,6 +17,29 @@ const firebaseConfig = {
 
 export const fbApp = initializeApp(firebaseConfig);
 export const auth = getAuth(fbApp);
+
+// Sessão vinculada à aba: fechar a aba/navegador já desloga sozinho
+// (em vez do padrão do Firebase, que mantém logado indefinidamente).
+setPersistence(auth, browserSessionPersistence).catch(e => console.error('Erro ao configurar persistência de sessão:', e));
+
+// Desconecta sozinho após 30 minutos sem nenhuma interação na página.
+const TEMPO_INATIVIDADE_MS = 30 * 60 * 1000;
+let _timerInatividade = null;
+function _resetTimerInatividade(){
+  if(_timerInatividade) clearTimeout(_timerInatividade);
+  _timerInatividade = setTimeout(() => {
+    signOut(auth).finally(() => {
+      alert('Sua sessão foi encerrada por 30 minutos de inatividade. Faça login novamente.');
+      location.reload();
+    });
+  }, TEMPO_INATIVIDADE_MS);
+}
+function _iniciarMonitorInatividade(){
+  ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(evt => {
+    window.addEventListener(evt, _resetTimerInatividade, { passive: true });
+  });
+  _resetTimerInatividade();
+}
 
 function injectOverlay(){
   if(document.getElementById('auth-overlay')) return;
@@ -66,6 +90,7 @@ export function requireAuth(){
     onAuthStateChanged(auth, (user)=>{
       if(user){
         overlay.remove();
+        _iniciarMonitorInatividade();
         if(!resolved){ resolved = true; resolve(user); }
       } else {
         loading.style.display = 'none';
