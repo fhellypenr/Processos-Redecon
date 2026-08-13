@@ -402,19 +402,20 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 </div>
 <div id="modal-salvar-template" class="modal-backdrop">
   <div class="modal">
-    <div class="modal-title">⭐ Salvar esta etapa como padrão</div>
-    <div class="field" style="font-size:12.5px;color:var(--text3);margin-bottom:12px">
+    <div class="modal-title" id="mst-titulo">⭐ Salvar esta etapa como padrão</div>
+    <div class="field" style="font-size:12.5px;color:var(--text3);margin-bottom:12px" id="mst-explicacao">
       Escolha para quais tipos de utilização essa etapa (nome + mensagem) deve virar o padrão. Só afeta processos criados a partir de agora — os que já existem não mudam. As demais etapas do modelo continuam como estão.
     </div>
     <div class="field"><label>Etapa</label>
       <div id="mst-preview" style="font-size:12px;color:var(--text2);background:var(--surface2);border-radius:var(--radius);padding:10px 12px"></div>
     </div>
     <div class="field"><label>Aplicar a</label>
-      <div id="mst-lista" style="display:flex;flex-direction:column;gap:6px;max-height:220px;overflow-y:auto"></div>
+      <div id="mst-lista" style="display:flex;flex-direction:column;gap:10px;max-height:280px;overflow-y:auto"></div>
     </div>
     <div class="modal-actions">
       <button class="btn btn-secondary" onclick="fecharModalSalvarTemplate()">Cancelar</button>
-      <button class="btn btn-primary" onclick="confirmarSalvarTemplate()">Salvar modelo</button>
+      <button class="btn btn-primary" id="mst-btn-confirmar" onclick="confirmarSalvarTemplate()">Salvar modelo</button>
+
     </div>
   </div>
 </div>
@@ -461,20 +462,20 @@ const ETAPAS_IMOVEL=[
   {nome:'Checklist de documentos',tipo:'intervalo',msg:''},
   {nome:'Envio p/ análise',tipo:'unico',msg:'Olá, [Nome]!\n\nOs documentos do seu processo foram encaminhados para análise da administradora. ✅\n\nEstamos acompanhando cada etapa de perto. Assim que tivermos novidades, te avisamos!'},
   {nome:'Triagem',tipo:'unico',msg:'Olá, [Nome]!\n\nBoa notícia: o seu processo avançou para a etapa de triagem.\n\nNessa fase, os documentos são conferidos antes das análises específicas. O processo está caminhando bem — qualquer novidade, te avisamos!'},
-  {nome:'Análise de crédito + certidões + matrícula + seguro de vida',tipo:'unico',msg:'Olá, [Nome]! Tudo bem?\n\nO processo avançou mais uma etapa. Agora está em análise simultânea de crédito, emissão das certidões, análise da matrícula e seguro de vida.\n\nApós a conclusão da análise da matrícula, será liberado o termo para desconto da taxa de vistoria e a engenharia agendará a avaliação no imóvel.\n\nO processo está seguindo bem. Qualquer novidade, te avisamos!'},
+  {nome:'Leitura da matrícula / Análise de crédito / Emissão das certidões',tipo:'unico',msg:'Olá, [Nome]! Tudo bem?\n\nO processo avançou mais uma etapa. Agora está em análise simultânea de crédito, emissão das certidões, análise da matrícula e seguro de vida.\n\nApós a conclusão da análise da matrícula, será liberado o termo para desconto da taxa de vistoria e a engenharia agendará a avaliação no imóvel.\n\nO processo está seguindo bem. Qualquer novidade, te avisamos!'},
   {nome:'Pgto/Desconto taxa vistoria',tipo:'unico',msg:'Boa tarde, [Nome]!\n\nA análise da matrícula foi concluída. 📋\n\nEncaminhamos o boleto para pagamento da taxa de vistoria. Assim que realizar o pagamento, pedimos que nos envie o comprovante para darmos continuidade ao processo.'},
-  {nome:'Vistoria do imóvel',tipo:'unico',msg:''},
+  {nome:'Vistoria do imóvel / Análise Jurídica / Análise dos pareceres',tipo:'intervalo',msg:''},
   {nome:'Comitê de aprovação',tipo:'unico',msg:'Bom dia, [Nome]! Tudo bem?\n\nBoa notícia: o processo foi encaminhado ao comitê de aprovação! 🙌🏻\n\nEstamos bem perto da reta final. Agora é aguardar o retorno para seguirmos com as próximas etapas. Assim que tivermos novidades, te avisamos!'},
   {nome:'Aprovação de cadastro',tipo:'unico',msg:'Boa tarde, [Nome]! Tudo bem?\n\nO processo foi aprovado! 🎉\n\nA partir de agora, a HS fará a conferência da relação final de documentos. Caso não haja pendências, o processo seguirá para atualização das certidões e confecção do contrato.\n\nSe houver algum ponto a resolver, a HS nos avisa e repassamos para você. Estamos de olho em cada detalhe. Qualquer novidade, te avisamos!'},
-  {nome:'Certificados digitais',tipo:'intervalo',msg:'Bom dia, [Nome]!\n\nA assinatura do contrato será feita de forma digital, o que garante mais segurança e agilidade para todos. 📄\n\n⚠️ Importante: não são aceitos certificados nos formatos Gov.br ou e-Notariado. É necessário um certificado ICP-Brasil.\n\nCaso ainda não tenha, a WHZ oferece as seguintes opções com bom custo:\n\n• A3 em nuvem (celular) — 4 meses: R$ 85,00\n• A3 em nuvem (celular) — 12 meses: R$ 145,00\n• A1 em arquivo (computador) — 12 meses: R$ 145,00\n\nPagamento via PIX — chave CNPJ: 43.476.346/0001-73 (WHZ Corp.)\n\nApós o pagamento, nos envie o comprovante. Caso já possua o certificado, é só nos informar!'},
-  {nome:'Atualização documental',tipo:'unico',msg:'Boa tarde, [Nome]! Tudo bem?\n\nInformamos que todos os documentos exigidos para a confecção do contrato já estão atualizados.\n\nEm breve a minuta será enviada para sua conferência e aprovação.\n\nSobre a guia do ITBI: o e-mail da HS menciona que ela já pode ser emitida, mas ainda não é necessário providenciar. Te avisamos quando for o momento certo para isso.'},
-  {nome:'Envio de minuta',tipo:'unico',msg:'Boa tarde, [Nome]!\n\nA minuta do contrato foi enviada para o seu e-mail. Temos um prazo de 24 horas para aprovação.\n\nPedimos que leia com atenção — nós também faremos a análise das informações principais, como datas, nomes e documentos.\n\nQualquer dúvida durante a leitura, pode nos chamar. Aguardamos sua aprovação!'},
-  {nome:'Contrato p/ assinatura',tipo:'intervalo',msg:'Boa tarde, [Nome]!\n\nOs links para assinatura do contrato foram gerados. Segue abaixo:\n\n[Nome do signatário] 🔗 [link]\n\n⚠️ As assinaturas precisam ser realizadas em até 48 horas para evitar a expiração dos links e possíveis atrasos no processo.\n\nQualquer dificuldade na assinatura, é só nos chamar!'},
+  {nome:'Conferência Documentação Final / Envio p/ WHZ (Certificados Digitais)',tipo:'intervalo',msg:'Bom dia, [Nome]!\n\nA assinatura do contrato será feita de forma digital, o que garante mais segurança e agilidade para todos. 📄\n\n⚠️ Importante: não são aceitos certificados nos formatos Gov.br ou e-Notariado. É necessário um certificado ICP-Brasil.\n\nCaso ainda não tenha, a WHZ oferece as seguintes opções com bom custo:\n\n• A3 em nuvem (celular) — 4 meses: R$ 85,00\n• A3 em nuvem (celular) — 12 meses: R$ 145,00\n• A1 em arquivo (computador) — 12 meses: R$ 145,00\n\nPagamento via PIX — chave CNPJ: 43.476.346/0001-73 (WHZ Corp.)\n\nApós o pagamento, nos envie o comprovante. Caso já possua o certificado, é só nos informar!'},
+  {nome:'Atualização final das certidões',tipo:'intervalo',msg:'Boa tarde, [Nome]! Tudo bem?\n\nInformamos que todos os documentos exigidos para a confecção do contrato já estão atualizados.\n\nEm breve a minuta será enviada para sua conferência e aprovação.\n\nSobre a guia do ITBI: o e-mail da HS menciona que ela já pode ser emitida, mas ainda não é necessário providenciar. Te avisamos quando for o momento certo para isso.'},
+  {nome:'Confecção dos contratos',tipo:'intervalo',msg:'Boa tarde, [Nome]!\n\nA minuta do contrato foi enviada para o seu e-mail. Temos um prazo de 24 horas para aprovação.\n\nPedimos que leia com atenção — nós também faremos a análise das informações principais, como datas, nomes e documentos.\n\nQualquer dúvida durante a leitura, pode nos chamar. Aguardamos sua aprovação!'},
+  {nome:'Coleta de assinaturas',tipo:'intervalo',msg:'Boa tarde, [Nome]!\n\nOs links para assinatura do contrato foram gerados. Segue abaixo:\n\n[Nome do signatário] 🔗 [link]\n\n⚠️ As assinaturas precisam ser realizadas em até 48 horas para evitar a expiração dos links e possíveis atrasos no processo.\n\nQualquer dificuldade na assinatura, é só nos chamar!'},
   {nome:'Emissão da guia ITBI',tipo:'unico',msg:'Bom dia, [Nome]! Tudo bem?\n\nA coleta das assinaturas foi concluída. ✅\n\nAgora é necessário emitir e pagar a guia do ITBI. Tanto a guia quanto o comprovante de pagamento precisarão ser apresentados no Registro de Imóveis para darmos continuidade.\n\nSe preferir, podemos solicitar a guia junto à prefeitura por protocolo digital — é só nos avisar! *(válido para imóveis em Pato Branco/PR)*'},
   {nome:'Pgto guia ITBI',tipo:'unico',msg:''},
-  {nome:'Registro em cartório (RI)',tipo:'intervalo',msg:'Bom dia, [Nome]!\n\nO processo foi encaminhado ao Registro de Imóveis. ✅\n\nNúmero do protocolo: [xxxxxx]\n\nAssim que tivermos retorno, te avisamos!'},
+  {nome:'Registro de Imóveis',tipo:'intervalo',msg:'Bom dia, [Nome]!\n\nO processo foi encaminhado ao Registro de Imóveis. ✅\n\nNúmero do protocolo: [xxxxxx]\n\nAssim que tivermos retorno, te avisamos!'},
   {nome:'Emolumentos',tipo:'unico',msg:'Bom dia, [Nome]! Tudo bem?\n\nO Registro de Imóveis liberou a taxa de Emolumentos para concluir a averbação na matrícula.\n\nO pagamento pode ser feito via PIX (QR Code), o que garante processamento automático e mais agilidade.\n\nAssim que realizar o pagamento, pedimos que nos envie o comprovante para anexarmos ao processo.'},
-  {nome:'Pgto crédito',tipo:'unico',msg:'Boa tarde, [Nome]! Tudo certo?\n\nO pagamento de R$ [valor], referente à aquisição do imóvel, está programado para amanhã, com previsão de crédito na conta do vendedor entre 12h e 15h.\n\nPor favor, nos avise assim que confirmar o recebimento ou caso note qualquer divergência. 📩'}
+  {nome:'Programação de pagamento',tipo:'unico',msg:'Boa tarde, [Nome]! Tudo certo?\n\nO pagamento de R$ [valor], referente à aquisição do imóvel, está programado para amanhã, com previsão de crédito na conta do vendedor entre 12h e 15h.\n\nPor favor, nos avise assim que confirmar o recebimento ou caso note qualquer divergência. 📩'}
 ];
 const ETAPAS_VEICULO=[
   {nome:'Checklist de documentos',tipo:'intervalo',msg:''},
@@ -703,48 +704,90 @@ async function carregarTemplates(){
 }
 
 let _mstEtapaIdx = undefined;
+let _mstModo = 'salvar'; // 'salvar' | 'remover'
+
+function _mstListaHTML(subtipoAtual, tipoAtual){
+  return Object.keys(SUBTIPOS).map(tipo=>{
+    const itens = SUBTIPOS[tipo].map(s=>{
+      const chave = tipo+'::'+s;
+      const marcado = (tipo===tipoAtual && s===subtipoAtual) ? 'checked' : '';
+      return `<label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:3px 0">
+        <input type="checkbox" data-chave="${chave}" ${marcado}> ${s}
+      </label>`;
+    }).join('');
+    return `<div><div style="font-size:11.5px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">${tipo==='Imóvel'?'🏠':'🚗'} ${tipo}</div>${itens}</div>`;
+  }).join('');
+}
+
 function salvarEtapaComoModelo(idx){
   if(!pSel) return;
   _mstEtapaIdx = idx;
+  _mstModo = 'salvar';
   const et = pSel.etapas[idx];
-  const subtipos = SUBTIPOS[pSel.tipo] || [];
+  document.getElementById('mst-titulo').textContent = '⭐ Salvar esta etapa como padrão';
+  document.getElementById('mst-explicacao').textContent = 'Escolha para quais tipos de utilização essa etapa (nome + mensagem) deve virar o padrão -- pode marcar de Imóvel e de Veículo ao mesmo tempo, se a etapa for igual nos dois. Só afeta processos criados a partir de agora -- os que já existem não mudam. As demais etapas do modelo continuam como estão.';
+  document.getElementById('mst-btn-confirmar').textContent = 'Salvar modelo';
+  document.getElementById('mst-btn-confirmar').className = 'btn btn-primary';
   document.getElementById('mst-preview').textContent = et.nome;
-  document.getElementById('mst-lista').innerHTML = subtipos.map(s=>
-    `<label style="display:flex;align-items:center;gap:8px;font-size:13px;padding:4px 0">
-      <input type="checkbox" value="${s}" ${s===pSel.subtipo?'checked':''}> ${s}
-    </label>`
-  ).join('');
+  document.getElementById('mst-lista').innerHTML = _mstListaHTML(pSel.subtipo, pSel.tipo);
   document.getElementById('modal-salvar-template').classList.add('open');
 }
+
+function removerEtapaDoModelo(idx){
+  if(!pSel) return;
+  _mstEtapaIdx = idx;
+  _mstModo = 'remover';
+  const et = pSel.etapas[idx];
+  document.getElementById('mst-titulo').textContent = '🗑 Remover esta etapa dos modelos';
+  document.getElementById('mst-explicacao').textContent = 'Escolha de quais tipos de utilização a etapa "'+et.nome+'" deve deixar de fazer parte do modelo padrão. Só afeta processos criados a partir de agora -- os que já existem não mudam, e a etapa continua existindo neste processo até você excluí-la dele também.';
+  document.getElementById('mst-btn-confirmar').textContent = 'Remover do(s) modelo(s)';
+  document.getElementById('mst-btn-confirmar').className = 'btn btn-danger';
+  document.getElementById('mst-preview').textContent = et.nome;
+  document.getElementById('mst-lista').innerHTML = _mstListaHTML(pSel.subtipo, pSel.tipo);
+  document.getElementById('modal-salvar-template').classList.add('open');
+}
+
 function fecharModalSalvarTemplate(){
   document.getElementById('modal-salvar-template').classList.remove('open');
   _mstEtapaIdx = undefined;
 }
+
 async function confirmarSalvarTemplate(){
-  const marcados = [...document.querySelectorAll('#mst-lista input:checked')].map(el=>el.value);
+  const marcados = [...document.querySelectorAll('#mst-lista input:checked')].map(el=>el.dataset.chave); // "Tipo::Subtipo"
   if(!marcados.length){ alert('Selecione ao menos um tipo de utilização.'); return; }
   if(!pSel || _mstEtapaIdx===undefined) return;
 
-  const et = pSel.etapas[_mstEtapaIdx];
+  const modo = _mstModo;                 // captura ANTES de qualquer espera, imune a outra ação em paralelo
+  const et = pSel.etapas[_mstEtapaIdx];   // idem
   const entrada = {nome:et.nome, tipo:et.tipo};
   if(et.msg) entrada.msg = et.msg;
   if(et.msgVariantes) entrada.msgVariantes = et.msgVariantes;
 
-  const tipo = pSel.tipo;
-  for(const subtipo of marcados){
-    const chave = _templateChave(tipo, subtipo);
-    // parte do modelo atual daquele subtipo (customizado ou o padrão de fábrica) e só atualiza/adiciona ESTA etapa
-    const base = TEMPLATES_OVERRIDE[chave] || _templateBase(tipo, subtipo);
-    const arr = base.map(e=>({...e}));
-    const idxExistente = arr.findIndex(e=>e.nome===entrada.nome);
-    if(idxExistente>=0) arr[idxExistente]=entrada; else arr.push(entrada);
-    TEMPLATES_OVERRIDE[chave] = arr;
+  fecharModalSalvarTemplate(); // fecha já aqui, antes das esperas, pra não deixar a modal aberta "no ar"
+
+  for(const chaveCompleta of marcados){
+    const [tipo, subtipo] = chaveCompleta.split('::');
+    const base = TEMPLATES_OVERRIDE[chaveCompleta] || _templateBase(tipo, subtipo);
+    let arr = base.map(e=>({...e}));
+
+    if(modo==='remover'){
+      arr = arr.filter(e=>e.nome!==et.nome);
+    } else {
+      const idxExistente = arr.findIndex(e=>e.nome===entrada.nome);
+      if(idxExistente>=0) arr[idxExistente]=entrada; else arr.push(entrada);
+    }
+
+    TEMPLATES_OVERRIDE[chaveCompleta] = arr;
     if(window._fbSalvarTemplates){
       try{ await window._fbSalvarTemplates(tipo, [subtipo], arr); }catch(e){ console.error(e); }
     }
   }
-  fecharModalSalvarTemplate();
-  alert('✅ Etapa "'+et.nome+'" salva como padrão para: '+marcados.join(', ')+'.\n\nOs próximos processos com esses tipos de utilização já vão nascer com ela. As outras etapas do modelo não foram alteradas.');
+  const rotulos = marcados.map(c=>c.replace('::',' — '));
+  if(modo==='remover'){
+    alert('🗑 Etapa "'+et.nome+'" removida do modelo de: '+rotulos.join(', ')+'.\n\nOs próximos processos com esses tipos não vão mais nascer com ela.');
+  } else {
+    alert('✅ Etapa "'+et.nome+'" salva como padrão para: '+rotulos.join(', ')+'.\n\nOs próximos processos com esses tipos de utilização já vão nascer com ela. As outras etapas do modelo não foram alteradas.');
+  }
 }
 async function carregar(){
   // Tentar carregar do Firebase primeiro
@@ -1167,6 +1210,7 @@ function renderDetalhe(){
         <button class="add-comment-btn" onclick="abrirComentario(${i})"><i class="ti ti-message-plus" style="font-size:13px"></i> adicionar comentário</button>
         ${'<button class="msg-btn" onclick="abrirMsgEtapa('+i+')"><i class="ti ti-brand-whatsapp" style="font-size:12px"></i> '+(et.msg?'mensagem':'+ criar mensagem')+'</button>'}
         ${!p.concluido?'<button class="link-btn" onclick="salvarEtapaComoModelo('+i+')" title="Salvar esta etapa (nome + mensagem) como padrão para novos processos"><i class="ti ti-star" style="font-size:12px"></i> salvar como padrão</button>':''}
+        ${!p.concluido?'<button class="link-btn" onclick="removerEtapaDoModelo('+i+')" title="Fazer com que novos processos não nasçam mais com esta etapa"><i class="ti ti-trash" style="font-size:12px"></i> remover dos modelos</button>':''}
         ${et.alerta?'<button class="btn-alerta-rem" onclick="removerAlerta('+i+')" title="Remover alerta">✕ alerta</button>':'<button class="btn-alerta-neg" onclick="abrirModalAlerta('+i+')">⚠ alerta</button>'}
       </div>`:''}
       ${et.alerta?'<div class="'+(et.alerta.tipo==='neg'?'alerta-neg':'alerta-pos')+'"><span class="alerta-icon">'+(et.alerta.tipo==='neg'?'⚠️':'✅')+'</span><span>'+et.alerta.texto+'</span></div>':''}</div>`;
