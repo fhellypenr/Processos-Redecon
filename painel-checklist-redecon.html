@@ -663,7 +663,9 @@
           <span class="chip" data-v="rural">Rural</span>
         </div>
       </div>
-      <div class="field"><label>Identificação (opcional — nº matrícula, nome do condomínio…)</label><input type="text" id="i_id" placeholder="Ex.: Matrícula 60.729 — Edifício Castell"></div>
+      <div class="field"><label>Identificação (opcional — mantenha curto)</label><input type="text" id="i_id" placeholder="Ex.: Matrícula 60.824 — Apto 1201, Ed. Chardonnay">
+        <div class="hint">Prefira só o essencial: nº da matrícula + apto/edifício ou lote. Evite endereço completo — fica mais fácil de ler no card.</div>
+      </div>
       <div class="field">
         <label>Condomínio</label>
         <select id="i_cond">
@@ -1299,12 +1301,16 @@ function gerar(){
   const cond = document.getElementById('i_cond').value;
   const cardsImovel = [];
   if(iTipo==='urbano'){
-    cardsImovel.push({t:'Matrícula de inteiro teor', d:(iObs? iObs+'. ':'')+'Certidão atualizada, obtida no Registro de Imóveis, completa, frente e verso.'});
+    const temGaragemSeparada = document.getElementById('i_garagem').checked;
+    const tituloMatriculaPrincipal = temGaragemSeparada
+      ? (document.getElementById('i_aptobox').checked ? 'Matrícula do apartamento' : 'Matrícula do imóvel')
+      : 'Matrícula de inteiro teor';
+    cardsImovel.push({t:tituloMatriculaPrincipal, d:(iObs? iObs+'. ':'')+'Certidão atualizada, obtida no Registro de Imóveis, completa, frente e verso.'});
     if(document.getElementById('i_aberta1').checked){
       const nOrig = document.getElementById('i_origem').value.trim();
       cardsImovel.push({t:'Matrícula de origem', d:'Enviar digitalizada a matrícula'+(nOrig?' de nº '+nOrig:'')+', da qual o imóvel foi originado — exigida por tratar-se de matrícula aberta há menos de 1 ano.'});
     }
-    if(document.getElementById('i_garagem').checked) cardsImovel.push({t:'Matrícula da vaga de garagem', d:'Certidão de inteiro teor atualizada da matrícula da garagem (registrada separadamente).'});
+    if(temGaragemSeparada) cardsImovel.push({t:'Matrícula da vaga de garagem', d:'Certidão de inteiro teor atualizada da matrícula da garagem (registrada separadamente).'});
     if(document.getElementById('i_menos1').checked) cardsImovel.push({t:'Escritura de compra e venda', d:'Exigida por tratar-se de imóvel adquirido há menos de 1 ano (cópia simples) — ou outro título aquisitivo.'});
     cardsImovel.push({t:'Espelho cadastral', d:'Documento emitido pela Prefeitura, ou cópia do último carnê do IPTU com os dados do imóvel e do proprietário.'});
     if(!document.getElementById('i_aptobox').checked) cardsImovel.push({t:'Planta de quadra e lote', d:'Emitida pela Prefeitura, com assinatura/carimbo do responsável técnico e sem rasuras.'});
@@ -1442,20 +1448,25 @@ function gerar(){
       } else {
         const n = v.querySelector('.f_nomepj').value.trim()||'[Empresa vendedora]';
         const ativo = v.querySelector('.f_ativo').value;
-        const cardsV = [
+        const cardsEmpresa = [
           {t:'Dados bancários', d:'Foto do cartão, print da conta ou talão de cheque constando: nome da empresa, banco, agência e número da conta.', pessoa:n},
           {t:'Certidão simplificada da Junta Comercial', d:'Atualizada — validade de 30 dias.', pessoa:n},
           {t:'Contrato Social ou Consolidação', d:'Cópia com autenticação digital, datada após 2003. Caso tenha alterações após a consolidação, enviá-las. Via eletrônica ou desmaterializada.', pessoa:n},
         ];
-        if(ativo) cardsV.push({t:'Situação do imóvel na empresa', d:(ativo==='circulante'?'Ativo circulante — produto de venda do CNPJ.':'Ativo imobilizado — integra o capital social da empresa.'), pessoa:n});
+        if(ativo) cardsEmpresa.push({t:'Situação do imóvel na empresa', d:(ativo==='circulante'?'Ativo circulante — produto de venda do CNPJ.':'Ativo imobilizado — integra o capital social da empresa.'), pessoa:n});
+        html += slideCards('Documentos do vendedor PJ', n, cardsEmpresa);
+
         const socs = (v.querySelector('.f_sociospj').value||'').split(',').map(s=>s.trim()).filter(Boolean);
-        socs.forEach(sn=>{
-          cardsV.push({t:'CNH digital', d:T.cnh[1], pessoa:'Sócio: '+sn});
-          cardsV.push({t:'Certidão de estado civil', d:'Certidão de casamento ou nascimento atualizada.', pessoa:'Sócio: '+sn});
-          cardsV.push({t:'Comprovante de residência', d:T.residencia[1], pessoa:'Sócio: '+sn});
-          cardsV.push({t:'Dados pessoais', d:T.dados[1], pessoa:'Sócio: '+sn});
-        });
-        html += slideCards('Documentos do vendedor PJ', n, cardsV);
+        if(socs.length){
+          const cardsSocios = [];
+          socs.forEach(sn=>{
+            cardsSocios.push({t:'CNH digital', d:T.cnh[1], pessoa:'Sócio: '+sn});
+            cardsSocios.push({t:'Certidão de estado civil', d:'Certidão de casamento ou nascimento atualizada.', pessoa:'Sócio: '+sn});
+            cardsSocios.push({t:'Comprovante de residência', d:T.residencia[1], pessoa:'Sócio: '+sn});
+            cardsSocios.push({t:'Dados pessoais', d:T.dados[1], pessoa:'Sócio: '+sn});
+          });
+          html += slideCards('Documentos do sócio', socs.length>1?'Sócios: '+socs.join(' e '):socs[0], cardsSocios);
+        }
       }
       /* procurador do vendedor */
       if(v.querySelector('.f_temproc')?.checked){
@@ -2153,7 +2164,7 @@ _A renda do casal pode ser somada na análise._`;
         const ec=v.querySelector('.v_pf .f_ec').value;
         if(n){ nomes.push(cj? n+' e '+cj : n); linhasEC.push('• O estado civil de *'+n+'*, conforme a matrícula ('+(EC_LABEL_PERG[ec]||ec)+'), ainda é o mesmo?'); }
       } else {
-        const n=v.querySelector('.f_nomepj').value.trim(); if(n){ nomes.push(n); temPJ=true; }
+        const n=v.querySelector('.f_nomepj').value.trim(); if(n) nomes.push(n); temPJ=true;
       }
     });
     const nomesTxt = nomes.length? nomes.join(' e ') : '[nomes da matrícula]';
