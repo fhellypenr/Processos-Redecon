@@ -1072,6 +1072,7 @@ function cardHTML(pessoa, t, dsc){
   return `<div class="doc${wide?' wide':''}" id="cd${++CARDSEQ}">
     <div class="strip"></div>
     <div class="ctrl no-print">
+      <button title="Alargar/estreitar este card" onclick="toggleLargura('cd${CARDSEQ}')">⇔</button>
       <button title="Ativar/desativar" onclick="tgl('cd${CARDSEQ}')">👁</button>
       <button title="Excluir" onclick="del('cd${CARDSEQ}')">✕</button>
     </div>
@@ -1081,6 +1082,12 @@ function cardHTML(pessoa, t, dsc){
       <p contenteditable="true"${wide && dsc.length>600?' class="cols"':''}>${dsc}</p>
     </div>
   </div>`;
+}
+function toggleLargura(id){
+  const el = document.getElementById(id);
+  el.classList.toggle('wide');
+  const p = el.querySelector('p');
+  if(p) p.classList.toggle('cols', el.classList.contains('wide') && (p.textContent||'').length>600);
 }
 function custaHTML(t, dsc){
   return `<div class="custa" id="cd${++CARDSEQ}">
