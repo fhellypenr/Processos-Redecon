@@ -99,6 +99,14 @@
   table.neg select.s-ok{background:#e8f7ec}
   table.neg select.s-pend{background:#fdeaea}
   table.neg select.s-imp{background:#fdf3e4}
+  table.neg select.s-proc{background:#e8f1fd}
+  table.neg input.dtproc{width:100%;border:1px solid var(--coral2);border-radius:6px;padding:3px 5px;font-size:11px;margin-top:3px;color:#8a2417;background:#fdf3f0}
+  #neg_resumo{display:none;background:#e8f1fd;border:1.5px solid #6b9fe0;border-radius:10px;padding:10px 14px;margin-bottom:12px;font-size:12.5px;color:#1a3d6b}
+  #neg_resumo b{display:block;margin-bottom:4px;font-size:13px}
+  .neg-obs-print{display:none}
+  body.print-neg .neg-obs-print{display:block;border:1.5px solid #6b9fe0;border-radius:10px;padding:14px 18px;margin-top:16px;font-size:12.5px;color:#1a3d6b;background:#f3f8ff}
+  body.print-neg .neg-obs-print h4{font-size:13.5px;margin-bottom:8px;color:#123}
+  body.print-neg .neg-obs-print ul{margin:8px 0 0 18px}
   .neg-actions{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px}
   #neg_links{margin-top:16px}
   #neg_links table{border-collapse:collapse;width:100%;font-size:12.5px}
@@ -182,7 +190,7 @@
     #tab_pre,#tab_neg,#tab_perg,#tab_proc{display:none !important}
     body.print-neg #tab_neg{display:block !important;padding:10mm}
     body.print-neg #tab_chk{display:none !important}
-    body.print-neg .neg-actions,body.print-neg #neg_links,body.print-neg .panelbox p.desc{display:none !important}
+    body.print-neg .neg-actions,body.print-neg #neg_links,body.print-neg .panelbox p.desc,body.print-neg #neg_resumo{display:none !important}
     body.print-neg .panelbox{border:0;padding:0}
     body.print-neg table.neg th.pcab .rmp{display:none}
     body.print-neg table.neg input, body.print-neg table.neg select{border:0;background:transparent !important;appearance:none;-webkit-appearance:none;padding:0;font-size:11px}
@@ -304,7 +312,9 @@
       <button class="btn btn-light" onclick="negAddPessoa()">+ Adicionar pessoa</button>
       <button class="btn btn-light" onclick="printNegativas()">🖨 Imprimir planilha</button>
     </div>
+    <div id="neg_resumo"></div>
     <div id="neg_wrap"></div>
+    <div id="neg_obs_print" class="neg-obs-print"></div>
     <div id="neg_links">
       <h3 style="margin:18px 0 10px">Links de emissão — Paraná</h3>
       <table>
@@ -1792,7 +1802,7 @@ const CERTS = [
   {k:'protestos', n:'Protestos'},
   {k:'mei', n:'Possui CNPJ MEI no nome'},
 ];
-const NEG_STATUS = ['','✅ Ok','🚫 Não foi possível emitir','⚠️ Informações insuficientes','➖ Não emite para PJ','❌ Pendente'];
+const NEG_STATUS = ['','✅ Ok','📋 Constam processos','🚫 Não foi possível emitir','⚠️ Informações insuficientes','➖ Não emite para PJ','❌ Pendente'];
 let NEG = {pessoas: []}; // {nome, cpf, nasc, parte, cert:{k:{s,d}}}
 
 function negAddPessoa(dados){
@@ -1802,13 +1812,53 @@ function negAddPessoa(dados){
 function negRmPessoa(i){ if(confirm('Remover esta pessoa da planilha?')){ NEG.pessoas.splice(i,1); negRender(); } }
 function negSet(i, campo, val){ NEG.pessoas[i][campo]=val; }
 function negSetCert(i, k, campo, val){
-  const p=NEG.pessoas[i]; p.cert[k]=p.cert[k]||{s:'',d:''}; p.cert[k][campo]=val;
-  if(campo==='s'){ const sel=document.getElementById('ns_'+i+'_'+k); if(sel) sel.className = negClasse(val); }
+  const p=NEG.pessoas[i]; p.cert[k]=p.cert[k]||{s:'',d:'',proc:''}; p.cert[k][campo]=val;
+  if(campo==='s'){
+    const sel=document.getElementById('ns_'+i+'_'+k); if(sel) sel.className = negClasse(val);
+    const npInput=document.getElementById('np_'+i+'_'+k);
+    if(npInput) npInput.style.display = val.includes('Constam processos') ? '' : 'none';
+    negAtualizarResumo();
+  } else if(campo==='proc'){
+    negAtualizarResumo();
+  }
 }
-function negClasse(s){ return s.includes('Ok')?'s-ok':(s.includes('Pendente')||s.includes('possível')?'s-pend':(s?'s-imp':'')); }
+function negListaProcessos(){
+  const lista=[];
+  NEG.pessoas.forEach(p=>{
+    CERTS.forEach(c=>{
+      const cel=p.cert[c.k];
+      if(cel && cel.s && cel.s.includes('Constam processos')){
+        lista.push({pessoa:p.nome||'(sem nome)', certidao:c.n, proc:(cel.proc||'').trim()});
+      }
+    });
+  });
+  return lista;
+}
+function negAtualizarResumo(){
+  const lista=negListaProcessos();
+  const box=document.getElementById('neg_resumo');
+  if(box){
+    if(!lista.length){ box.style.display='none'; box.innerHTML=''; }
+    else {
+      box.style.display='block';
+      box.innerHTML='<b>📋 Constam processos em '+lista.length+' consulta'+(lista.length>1?'s':'')+':</b>'
+        + lista.map(x=>'• '+x.pessoa+' — '+x.certidao+(x.proc?' — nº '+x.proc:' (nº do processo não informado)')).join('<br>');
+    }
+  }
+  const boxPrint=document.getElementById('neg_obs_print');
+  if(boxPrint){
+    if(!lista.length){ boxPrint.innerHTML=''; }
+    else {
+      boxPrint.innerHTML='<h4>📋 Observação — processos constantes nas certidões</h4>'
+        + '<p>Constam processos nas consultas abaixo. A HS Consórcios irá analisar cada certidão negativa e, caso necessário, poderá solicitar documentos complementares para a visualização completa desses processos.</p>'
+        + '<ul>'+lista.map(x=>'<li>'+x.pessoa+' — '+x.certidao+(x.proc?' — nº '+x.proc:'')+'</li>').join('')+'</ul>';
+    }
+  }
+}
+function negClasse(s){ return s.includes('Ok')?'s-ok':(s.includes('Constam processos')?'s-proc':(s.includes('Pendente')||s.includes('possível')?'s-pend':(s?'s-imp':''))); }
 function negRender(){
   const w=document.getElementById('neg_wrap');
-  if(!NEG.pessoas.length){ w.innerHTML='<p class="desc" style="color:var(--muted)">Nenhuma pessoa ainda. Use "Puxar partes do checklist" ou "+ Adicionar pessoa".</p>'; return; }
+  if(!NEG.pessoas.length){ w.innerHTML='<p class="desc" style="color:var(--muted)">Nenhuma pessoa ainda. Use "Puxar partes do checklist" ou "+ Adicionar pessoa".</p>'; negAtualizarResumo(); return; }
   let h='<table class="neg"><tr><th class="cert">Pessoa / Certidão</th>';
   NEG.pessoas.forEach((p,i)=>{
     h+=`<th class="pcab"><button class="rmp no-print" onclick="negRmPessoa(${i})">✕</button>
@@ -1821,15 +1871,17 @@ function negRender(){
   CERTS.forEach(c=>{
     h+=`<tr><th class="cert">${c.n}</th>`;
     NEG.pessoas.forEach((p,i)=>{
-      const cel=p.cert[c.k]||{s:'',d:''};
+      const cel=p.cert[c.k]||{s:'',d:'',proc:''};
       h+=`<td><select id="ns_${i}_${c.k}" class="${negClasse(cel.s)}" onchange="negSetCert(${i},'${c.k}','s',this.value)">`;
       NEG_STATUS.forEach(s=>{ h+=`<option ${s===cel.s?'selected':''}>${s}</option>`; });
-      h+=`</select><input class="dt" placeholder="Data" value="${cel.d||''}" oninput="negSetCert(${i},'${c.k}','d',this.value)"></td>`;
+      h+=`</select><input class="dt" placeholder="Data" value="${cel.d||''}" oninput="negSetCert(${i},'${c.k}','d',this.value)">`;
+      h+=`<input class="dtproc" id="np_${i}_${c.k}" placeholder="Nº do processo" value="${cel.proc||''}" oninput="negSetCert(${i},'${c.k}','proc',this.value)" style="${(cel.s||'').includes('Constam processos')?'':'display:none'}"></td>`;
     });
     h+='</tr>';
   });
   h+='</table>';
   w.innerHTML=h;
+  negAtualizarResumo();
 }
 function negJaExiste(nome){ return NEG.pessoas.some(p=>p.nome.trim().toLowerCase()===nome.trim().toLowerCase()); }
 function negPuxarPartes(){
