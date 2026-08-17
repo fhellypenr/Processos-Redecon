@@ -1084,12 +1084,16 @@ function precisaPacto(regime, pre77){
 /* ================= GERAÇÃO DOS SLIDES ================= */
 let CARDSEQ = 0;
 const WIDE_LIMIT = 300; // caracteres: acima disso o card ocupa a largura toda
+/* ===================== TEMPLATES DE DOCUMENTOS (padronização por nome do card) ===================== */
+let DOC_TEMPLATES_OVERRIDE = {};
 function cardHTML(pessoa, t, dsc){
+  if(DOC_TEMPLATES_OVERRIDE[t]) dsc = DOC_TEMPLATES_OVERRIDE[t];
   const wide = (dsc||'').length > WIDE_LIMIT;
   return `<div class="doc${wide?' wide':''}" id="cd${++CARDSEQ}">
     <div class="strip"></div>
     <div class="ctrl no-print">
       <button title="Alargar/estreitar este card" onclick="toggleLargura('cd${CARDSEQ}')">⇔</button>
+      <button title="Salvar este texto como padrão para todos os processos com este documento" onclick="salvarCardComoPadrao('cd${CARDSEQ}')">💾</button>
       <button title="Ativar/desativar" onclick="tgl('cd${CARDSEQ}')">👁</button>
       <button title="Excluir" onclick="del('cd${CARDSEQ}')">✕</button>
     </div>
@@ -1099,6 +1103,30 @@ function cardHTML(pessoa, t, dsc){
       <p contenteditable="true"${wide && dsc.length>600?' class="cols"':''}>${dsc}</p>
     </div>
   </div>`;
+}
+async function salvarCardComoPadrao(id){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const titulo = el.querySelector('h4 span[contenteditable]').textContent.trim();
+  const texto = el.querySelector('p').textContent.trim();
+  if(!titulo || !texto) return;
+  const jaTinhaModelo = !!DOC_TEMPLATES_OVERRIDE[titulo];
+  const ok = confirm('Salvar este texto como padrão para o documento "'+titulo+'"?\n\n'
+    +'A partir de agora, TODO card chamado "'+titulo+'" (em qualquer processo, imóvel ou veículo) vai nascer com esse texto — inclusive se esse nome aparecer em mais de um contexto (ex.: rendas diferentes).\n\n'
+    +(jaTinhaModelo?'Isso vai substituir o padrão salvo anteriormente para este documento.':'Processos já emitidos não mudam, só os próximos.'));
+  if(!ok) return;
+  DOC_TEMPLATES_OVERRIDE[titulo] = texto;
+  if(window._fbSalvarDocTemplate){
+    try{ await window._fbSalvarDocTemplate(titulo, texto); }catch(e){ console.error(e); }
+  }
+  alert('✅ Padrão salvo para "'+titulo+'". Os próximos checklists com esse documento já vão nascer com esse texto.');
+}
+async function carregarDocTemplates(){
+  if(!window._fbCarregarDocTemplates) return;
+  try{
+    const remoto = await window._fbCarregarDocTemplates();
+    if(remoto) Object.assign(DOC_TEMPLATES_OVERRIDE, remoto);
+  }catch(e){ console.error('Erro ao carregar padrões de documentos:', e); }
 }
 function toggleLargura(id){
   const el = document.getElementById(id);
@@ -1158,16 +1186,20 @@ function slideCards(titulo, sub, cards){
     </div>
   </div>`;
 }
-const ARCS_SVG = `<svg class="arcs" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-  <defs><linearGradient id="arcgrad" x1="0.1" y1="1" x2="0.8" y2="0">
+let _arcsSeq = 0;
+function arcsSvg(){
+  const gid = 'arcgrad'+(++_arcsSeq);
+  return `<svg class="arcs" viewBox="0 0 1000 1000" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+  <defs><linearGradient id="${gid}" x1="0.1" y1="1" x2="0.8" y2="0">
     <stop offset="0" stop-color="#8f1e00"/><stop offset="0.55" stop-color="#f23000"/><stop offset="1" stop-color="#f5490a"/>
   </linearGradient></defs>
-  <circle cx="500" cy="500" r="430" fill="none" stroke="url(#arcgrad)" stroke-width="110"/>
-  <circle cx="500" cy="500" r="215" fill="none" stroke="url(#arcgrad)" stroke-width="95"/>
+  <circle cx="500" cy="500" r="430" fill="none" stroke="url(#${gid})" stroke-width="110"/>
+  <circle cx="500" cy="500" r="215" fill="none" stroke="url(#${gid})" stroke-width="95"/>
 </svg>`;
+}
 function slideCapa(eyebrow, titulo, nome, papel, credito){
   return `<div class="slide dark">
-    ${ARCS_SVG}
+    ${arcsSvg()}
     <div class="capa-content">
       <div class="eyebrow" contenteditable="true">${eyebrow}</div>
       <h2 contenteditable="true">${titulo}</h2>
@@ -1219,7 +1251,7 @@ function slideCustas(itens, titulo, sub){
 }
 function slideFinal(){
   return `<div class="slide dark fimslide">
-    ${ARCS_SVG}
+    ${arcsSvg()}
     <div class="fim">
       <h2>Especialista em Consórcio!</h2>
       <h5>Início do processo</h5>
@@ -2659,6 +2691,18 @@ procBadge(); procRender();
     catch(e){ console.error('Erro ao salvar checklists na nuvem:', e); }
   };
 
+  window._fbSalvarDocTemplate = async function(titulo, texto){
+    try{ await setDoc(doc(db,'dados','checklist_doc_templates'), { [titulo]: texto }, { merge: true }); }
+    catch(e){ console.error('Erro ao salvar padrão de documento:', e); }
+  };
+  window._fbCarregarDocTemplates = async function(){
+    try{
+      const snap = await getDoc(doc(db,'dados','checklist_doc_templates'));
+      if(snap.exists()) return snap.data();
+    }catch(e){ console.error('Erro ao carregar padrões de documentos:', e); }
+    return null;
+  };
+
   window.iniciarSyncFirebase = async function(){
     try{
       const snap = await getDoc(doc(db,'dados','checklists'));
@@ -2672,6 +2716,7 @@ procBadge(); procRender();
         }
       }
     }catch(e){ console.error('Erro ao carregar checklists da nuvem:', e); }
+    await carregarDocTemplates();
     procRender();
     if(PROC_ATUAL){
       const all = procsAll();
