@@ -161,9 +161,10 @@
   .finbox{background:#fdf3f0;border:2px solid var(--coral);border-radius:12px;padding:16px 20px;margin-top:14px;break-inside:avoid}
   .finbox h4{font-size:13.5px;font-weight:800;color:#8a2417;text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
   .finbox .valor{font-size:24px;font-weight:800;color:var(--coral)}
+  .finbox .valor .nota-extra{font-size:12.5px;font-weight:600;color:#8a6a63;margin-left:6px;vertical-align:middle}
   .finbox p{font-size:11.5px;color:#7a5952;margin-top:5px;line-height:1.45}
   .finbox p.destaque{font-size:13.5px;color:#5a3d37;font-weight:700;line-height:1.5;margin-top:9px}
-  @media print{.finbox .valor{font-size:29px}.finbox h4{font-size:15px}.finbox p{font-size:12.5px}.finbox p.destaque{font-size:16px}}
+  @media print{.finbox .valor{font-size:29px}.finbox .valor .nota-extra{font-size:14px}.finbox h4{font-size:15px}.finbox p{font-size:12.5px}.finbox p.destaque{font-size:16px}}
   .obsbox{border:1.5px solid var(--coral2);border-radius:12px;padding:22px 26px;margin-top:20px}
   .obsbox h4{font-size:16px;font-weight:800;margin-bottom:12px;display:flex;gap:9px;align-items:center}
   .obsbox p{font-size:13.5px;line-height:1.6;color:#33333b;margin-bottom:10px;text-align:justify}
@@ -1190,7 +1191,7 @@ function slideObsResumoAvulso(modo){
   }
   let rendaHtml='';
   if(renda){
-    rendaHtml = `<div class="finbox"><h4>Renda mínima a comprovar</h4><div class="valor" contenteditable="true">R$ ${renda}</div><p contenteditable="true">Exigência do Banco Central: renda líquida mínima de 3 vezes o valor da parcela mensal. Pode ser composta com a renda do cônjuge.</p></div>`;
+    rendaHtml = `<div class="finbox"><h4>Renda mínima a comprovar</h4><div class="valor">R$ <span contenteditable="true">${renda}</span><span class="nota-extra" contenteditable="true">+ parcelas de outros consórcios já contemplados e utilizados</span></div><p contenteditable="true">Exigência do Banco Central: renda líquida mínima de 3 vezes o valor da parcela mensal. Pode ser composta com a renda do cônjuge. Se o cliente já tiver outros consórcios contemplados e utilizados (imóvel, veículo, construção etc.) com parcelas em andamento, some elas também.</p></div>`;
   }
   if(!obsHtml && !rendaHtml) return '';
   const titulo = obsHtml ? 'Observações e resumo do processo' : 'Resumo do processo';
@@ -2418,7 +2419,7 @@ function slideResumoFin(modo, soRenda){
   if(!renda && !valbem) return '';
   const bemLabel = modo==='veiculo' ? 'do veículo' : 'do imóvel';
   let h='<div class="slide"><h3 class="titulo" contenteditable="true">Resumo do processo</h3><div class="sub" contenteditable="true">Valores de referência para a análise — em caso de dúvida, fale com a Redecon</div>';
-  if(renda) h+=`<div class="finbox"><h4>Renda mínima a comprovar</h4><div class="valor" contenteditable="true">R$ ${renda}</div><p contenteditable="true">Exigência do Banco Central: renda líquida mínima de 3 vezes o valor da parcela mensal. Pode ser composta com a renda do cônjuge.</p></div>`;
+  if(renda) h+=`<div class="finbox"><h4>Renda mínima a comprovar</h4><div class="valor">R$ <span contenteditable="true">${renda}</span><span class="nota-extra" contenteditable="true">+ parcelas de outros consórcios já contemplados e utilizados</span></div><p contenteditable="true">Exigência do Banco Central: renda líquida mínima de 3 vezes o valor da parcela mensal. Pode ser composta com a renda do cônjuge. Se o cliente já tiver outros consórcios contemplados e utilizados (imóvel, veículo, construção etc.) com parcelas em andamento, some elas também.</p></div>`;
   if(valbem){
     let txtBem;
     if(modo!=='veiculo'){
