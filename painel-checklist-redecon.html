@@ -311,6 +311,11 @@
       <button class="btn btn-coral" onclick="negPuxarPartes()">⟳ Puxar partes do checklist</button>
       <button class="btn btn-light" onclick="negAddPessoa()">+ Adicionar pessoa</button>
       <button class="btn btn-light" onclick="printNegativas()">🖨 Imprimir planilha</button>
+      <span style="display:flex;align-items:center;gap:6px;margin-left:auto;font-size:12.5px;color:var(--muted)">
+        📅 Data padrão das consultas:
+        <input type="text" id="neg_data_padrao" style="width:100px;border:1px solid var(--line);border-radius:6px;padding:5px 8px;font-size:12.5px" oninput="negDataPadraoAlterada()">
+        <button class="btn btn-light" style="padding:5px 10px;font-size:12px" onclick="negAplicarDataPadrao()" title="Preenche essa data em todas as consultas que ainda estiverem sem data">Aplicar às vazias</button>
+      </span>
     </div>
     <div id="neg_resumo"></div>
     <div id="neg_wrap"></div>
@@ -1784,7 +1789,7 @@ function abrirTab(t){
     document.getElementById('tab_'+x).classList.toggle('hide', x!==t);
     document.querySelector('nav.tabs button[data-t='+x+']').classList.toggle('on', x===t);
   });
-  if(t==='neg') negRender();
+  if(t==='neg'){ const dp=document.getElementById('neg_data_padrao'); if(dp && !dp.value) dp.value=NEG_DATA_PADRAO; negRender(); }
   if(t==='perg') gerarPerguntas();
   if(t==='proc') procRender();
   procAutoSave();
@@ -1803,6 +1808,8 @@ const CERTS = [
   {k:'mei', n:'Possui CNPJ MEI no nome'},
 ];
 const NEG_STATUS = ['','✅ Ok','📋 Constam processos','🚫 Não foi possível emitir','⚠️ Informações insuficientes','➖ Não emite para PJ','❌ Pendente'];
+function negDataHoje(){ const d=new Date(); const p=n=>String(n).padStart(2,'0'); return p(d.getDate())+'/'+p(d.getMonth()+1)+'/'+d.getFullYear(); }
+let NEG_DATA_PADRAO = negDataHoje();
 let NEG = {pessoas: []}; // {nome, cpf, nasc, parte, cert:{k:{s,d}}}
 
 function negAddPessoa(dados){
@@ -1817,10 +1824,32 @@ function negSetCert(i, k, campo, val){
     const sel=document.getElementById('ns_'+i+'_'+k); if(sel) sel.className = negClasse(val);
     const npInput=document.getElementById('np_'+i+'_'+k);
     if(npInput) npInput.style.display = val.includes('Constam processos') ? '' : 'none';
+    // preenche a data automaticamente com a data padrão, só se ainda estiver vazia
+    if(val && !p.cert[k].d){
+      p.cert[k].d = NEG_DATA_PADRAO;
+      const dtInput = document.getElementById('nd_'+i+'_'+k);
+      if(dtInput) dtInput.value = NEG_DATA_PADRAO;
+    }
     negAtualizarResumo();
   } else if(campo==='proc'){
     negAtualizarResumo();
   }
+}
+function negDataPadraoAlterada(){
+  NEG_DATA_PADRAO = document.getElementById('neg_data_padrao').value.trim();
+}
+function negAplicarDataPadrao(){
+  if(!NEG_DATA_PADRAO){ alert('Preencha a data padrão primeiro.'); return; }
+  let preenchidas=0;
+  NEG.pessoas.forEach((p,i)=>{
+    CERTS.forEach(c=>{
+      const cel=p.cert[c.k];
+      if(cel && cel.s && !cel.d){ cel.d=NEG_DATA_PADRAO; preenchidas++; }
+    });
+  });
+  negRender();
+  if(preenchidas) alert('Data aplicada em '+preenchidas+' consulta(s) que estavam sem data.');
+  else alert('Nenhuma consulta vazia encontrada — todas já têm data preenchida.');
 }
 function negListaProcessos(){
   const lista=[];
@@ -1874,7 +1903,7 @@ function negRender(){
       const cel=p.cert[c.k]||{s:'',d:'',proc:''};
       h+=`<td><select id="ns_${i}_${c.k}" class="${negClasse(cel.s)}" onchange="negSetCert(${i},'${c.k}','s',this.value)">`;
       NEG_STATUS.forEach(s=>{ h+=`<option ${s===cel.s?'selected':''}>${s}</option>`; });
-      h+=`</select><input class="dt" placeholder="Data" value="${cel.d||''}" oninput="negSetCert(${i},'${c.k}','d',this.value)">`;
+      h+=`</select><input class="dt" id="nd_${i}_${c.k}" placeholder="Data" value="${cel.d||''}" oninput="negSetCert(${i},'${c.k}','d',this.value)">`;
       h+=`<input class="dtproc" id="np_${i}_${c.k}" placeholder="Nº do processo" value="${cel.proc||''}" oninput="negSetCert(${i},'${c.k}','proc',this.value)" style="${(cel.s||'').includes('Constam processos')?'':'display:none'}"></td>`;
     });
     h+='</tr>';
