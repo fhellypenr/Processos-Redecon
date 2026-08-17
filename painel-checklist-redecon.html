@@ -253,7 +253,9 @@
 </script>
 <header class="app">
   <div class="brand">
-    <a href="index.html" style="color:#fff;text-decoration:none;font-size:12px;opacity:.75;margin-right:6px">🏠 Hub</a>
+    <a href="index.html" style="color:#fff;text-decoration:none;font-size:12px;opacity:.85">🏠 Hub</a>
+    <a href="painel-checklist-redecon.html" style="color:#fff;text-decoration:none;font-size:12px;font-weight:700">📋 Checklist</a>
+    <a href="redecon_processos.html" style="color:#fff;text-decoration:none;font-size:12px;opacity:.85">🗂️ Gestão de Processos</a>
     <div class="arc"></div>
     <h1>Painel de Checklist<small>Redecon Consórcios · HS Consórcios</small></h1>
   </div>
@@ -2474,8 +2476,9 @@ function slideResumoFin(modo, soRenda){
 
 /* ===================== CRIAR PROCESSO NO ACOMPANHAMENTO ===================== */
 function criarProcessoNoAcompanhamento(modo, btnEl){
-  const nome = document.getElementById('p_nome').value.trim();
-  if(!nome){ alert('Preencha o nome do cliente no início do formulário antes de criar o processo.'); return; }
+  const nomeCapa = document.getElementById('p_nome').value.trim();
+  const nome = (typeof PROC_ATUAL === 'string' && PROC_ATUAL.trim()) ? PROC_ATUAL.trim() : nomeCapa;
+  if(!nome){ alert('Preencha o nome do cliente no início do formulário (ou salve o processo na aba 🗂 Processos) antes de criar o processo.'); return; }
   const grupo = document.getElementById('p_grupo').value.trim();
   const cota = document.getElementById('p_cota').value.trim();
   const grupoCota = [grupo, cota].filter(Boolean).join(' / ');
