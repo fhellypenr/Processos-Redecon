@@ -713,6 +713,7 @@
     desativado (👁) ou excluído (✕), e você pode adicionar cards avulsos em cada seção.<br>
     Ao final, use <b>Imprimir / Salvar PDF</b> para emitir o documento.
   </div>
+  <div id="msgs_envio" style="display:none;max-width:960px;margin:0 auto 24px"></div>
   <div id="slides"></div>
 </div>
 </main>
@@ -1549,6 +1550,7 @@ function gerar(){
 
   document.getElementById('vazio').style.display='none';
   document.getElementById('slides').innerHTML = html;
+  atualizarMensagensEnvio('imovel');
   decorateSlides();
   procAutoSave();
   try{ document.getElementById('slides').scrollIntoView({behavior:'smooth'}); }catch(e){}
@@ -1666,6 +1668,7 @@ function gerarAvulso(){
 
   document.getElementById('vazio').style.display='none';
   document.getElementById('slides').innerHTML = html;
+  atualizarMensagensEnvio('avulso');
   decorateSlides();
   procAutoSave();
   try{ document.getElementById('slides').scrollIntoView({behavior:'smooth'}); }catch(e){}
@@ -1778,6 +1781,7 @@ function gerarVeiculo(){
 
   document.getElementById('vazio').style.display='none';
   document.getElementById('slides').innerHTML = html;
+  atualizarMensagensEnvio('veiculo');
   decorateSlides();
   procAutoSave();
   try{ document.getElementById('slides').scrollIntoView({behavior:'smooth'}); }catch(e){}
@@ -2288,6 +2292,98 @@ function copiarPerg(id){
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(txt).then(()=>alert('Copiado! Cole no WhatsApp.')).catch(()=>{});
   }
+}
+
+/* ===================== MENSAGENS PARA WHATSAPP (junto aos PDFs) ===================== */
+function copiarMsgEnvio(id){
+  const el = document.getElementById(id);
+  const txt = el.textContent;
+  const btn = document.querySelector('[data-copyfor="'+id+'"]');
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(()=>{
+      if(btn){ const orig=btn.textContent; btn.textContent='Copiado ✓'; setTimeout(()=>{ btn.textContent=orig; }, 1500); }
+    }).catch(()=>{});
+  }
+}
+function atualizarMensagensEnvio(modo){
+  const box = document.getElementById('msgs_envio');
+  if(!box) return;
+  if(modo==='avulso'){ box.style.display='none'; box.innerHTML=''; return; }
+
+  const tipoCliente = chipVals('c_tipo')[0]||'pf';
+  const nomeCliente = tipoCliente==='pj'
+    ? (document.getElementById('pj_nome').value.trim()||'[Nome]')
+    : (document.getElementById('c_nome').value.trim()||'[Nome]');
+  const ecCliente = document.getElementById('c_ec').value;
+  const seguroVal = document.getElementById('f_seguro').value.trim();
+
+  const msgs = [];
+
+  /* 1) Junto ao PDF do cliente */
+  msgs.push({
+    titulo: '📄 Junto ao PDF do cliente',
+    texto: 'Segue em anexo o PDF com as orientações e documentos necessários de '+nomeCliente+'. Pedimos que verifique o arquivo para dar andamento.\n\n📌 Importante: Atentar para as informações sobre as custas do processo. Recomendamos a leitura completa para evitar imprevistos ao longo das etapas.'
+  });
+
+  /* 2) Declaração de saúde -- só PF */
+  if(tipoCliente==='pf'){
+    let txt = nomeCliente+' precisa responder as 5 perguntas acima para a confecção da Declaração de Saúde referente ao Seguro Prestamista.\n\n🛡️ O seguro é obrigatório e garante a quitação do saldo devedor em caso de morte ou invalidez do titular.\n\nTaxa: 0,05551% sobre o saldo devedor';
+    txt += seguroVal ? (', com valor inicial de R$ '+seguroVal+', reduzindo conforme a amortização do saldo.') : '.';
+    msgs.push({titulo:'🩺 Junto às 5 perguntas (Declaração de Saúde)', texto:txt});
+  }
+
+  /* 3) Declaração de não união estável -- só imóvel, PF, solteiro/divorciado/viúvo */
+  if(modo==='imovel' && tipoCliente==='pf' && ['solteiro','divorciado','viuvo'].includes(ecCliente)){
+    msgs.push({
+      titulo: '✍️ Junto à Declaração de Não União Estável',
+      texto: 'As assinaturas ('+nomeCliente+' + 2 testemunhas) devem ser por Gov, ICP-Brasil ou e-Notariado.'
+    });
+  }
+
+  /* 4) Junto ao PDF do(s) vendedor(es) / veículo */
+  if(modo==='imovel'){
+    const utz = chipVals('p_utz');
+    const temVend = utz.includes('aquisicao') || utz.includes('quit_terceiro');
+    if(temVend){
+      const nomesV = [...document.querySelectorAll('#vends .subcard')].map(v=>{
+        if(v.querySelector('.f_tipo').value==='pf'){
+          const nn=(v.querySelector('.f_nome').value||'').trim();
+          const cc=(v.querySelector('.f_cjnome')?.value||'').trim();
+          const ee=v.querySelector('.v_pf .f_ec').value;
+          return ((ee==='casado'||ee==='solteiro_ue') && cc) ? nn+' e '+cc : nn;
+        }
+        return (v.querySelector('.f_nomepj').value||'').trim();
+      }).filter(Boolean);
+      if(nomesV.length){
+        const lista = nomesV.length>1 ? nomesV.join(', ') : nomesV[0];
+        msgs.push({
+          titulo: '📄 Junto ao PDF do(s) vendedor(es)',
+          texto: 'Segue em anexo o PDF com as orientações e documentos necessários de '+lista+' e do imóvel. Pedimos que verifiquem o arquivo para dar andamento.\n\n📌 Importante: Atentar para as informações sobre as custas do processo. Recomendamos a leitura completa para evitar imprevistos ao longo das etapas.'
+        });
+      }
+    }
+  } else if(modo==='veiculo'){
+    const vId = document.getElementById('v_id').value.trim();
+    msgs.push({
+      titulo: '📄 Junto ao PDF do veículo e vendedor',
+      texto: 'Segue em anexo o PDF com as orientações e documentos necessários do vendedor e do veículo'+(vId?' ('+vId+')':'')+'. Pedimos que verifiquem o arquivo para dar andamento.\n\n📌 Importante: Atentar para as informações sobre as custas do processo. Recomendamos a leitura completa para evitar imprevistos ao longo das etapas.'
+    });
+  }
+
+  if(!msgs.length){ box.style.display='none'; box.innerHTML=''; return; }
+
+  box.style.display='block';
+  box.innerHTML = '<h3 style="font-size:15px;font-weight:800;margin-bottom:10px;color:var(--ink)">📩 Mensagens para enviar junto aos PDFs</h3>'
+    + msgs.map((m,i)=>{
+      const id = 'msgenvio_'+i;
+      return '<div class="no-print" style="border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fff">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;gap:10px">'
+        + '<b style="font-size:13px">'+m.titulo+'</b>'
+        + '<button class="btn btn-light" data-copyfor="'+id+'" style="padding:5px 10px;font-size:12px;flex:0 0 auto" onclick="copiarMsgEnvio(\''+id+'\')">Copiar</button>'
+        + '</div>'
+        + '<div id="'+id+'" style="white-space:pre-wrap;font-size:13px;color:#333;line-height:1.5" contenteditable="true">'+m.texto+'</div>'
+        + '</div>';
+    }).join('');
 }
 
 /* ===================== RESUMO FINANCEIRO ===================== */
