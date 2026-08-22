@@ -80,9 +80,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .stat-label{font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600}
 .stat-value{font-size:28px;font-weight:700}
 .tabs{display:flex;gap:4px;margin-bottom:1.25rem;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:4px;box-shadow:var(--shadow);flex-wrap:wrap;justify-content:center}
-.tab{padding:6px 16px;font-size:13px;font-weight:500;border-radius:var(--radius-sm);border:none;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
+.tab{padding:6px 16px;font-size:13px;font-weight:500;border-radius:var(--radius-sm);border:1px solid transparent;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
 .tab:hover{background:var(--bg);color:var(--text)}
-.tab.active{background:#C52F01;color:#fff}
+.tab.active{background:var(--blue-light);color:var(--blue);border-color:var(--blue-border)}
 .processo-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1.125rem 1.25rem;margin-bottom:10px;cursor:pointer;box-shadow:var(--shadow);transition:border-color .15s,box-shadow .15s;width:100%;box-sizing:border-box}
 .processo-card:hover{border-color:var(--border-strong);box-shadow:var(--shadow-md)}
 .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;width:100%}
@@ -92,14 +92,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .badge-imovel{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border)}
 .badge-veiculo{background:var(--amber-light);color:var(--amber);border:1px solid var(--amber-border)}
 .badge-concluido{background:var(--green-light);color:var(--green);border:1px solid var(--green-border)}
-.badge-cancelado{background:#fff0f0;color:#c41c1c;border:1px solid #fcc}
+.badge-cancelado{background:var(--red-light);color:var(--red);border:1px solid var(--red-border)}
 .progress-bar-wrap{height:4px;background:var(--bg);border-radius:4px;margin-bottom:10px;overflow:hidden;flex-shrink:0}
-.progress-bar{height:100%;background:#C52F01;border-radius:4px;transition:width .3s}
-.progress-bar.done{background:#1D9E75}
+.progress-bar{height:100%;background:var(--blue);border-radius:4px;transition:width .3s}
+.progress-bar.done{background:var(--green)}
 .card-footer{display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--text2);gap:6px;width:100%}
 .dots{display:flex;gap:3px;flex-wrap:nowrap;overflow:hidden;max-width:100%}
 .dot{width:7px;height:7px;border-radius:50%}
-.dot-done{background:#1D9E75}.dot-current{background:#C52F01}.dot-alert{background:#E24B4A}.dot-pending{background:#ccc}
+.dot-done{background:var(--green)}.dot-current{background:var(--blue)}.dot-alert{background:var(--red)}.dot-pending{background:var(--border-strong)}
 .detail-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
 .detail-top{padding:1.25rem 1.5rem;border-bottom:1px solid #DDD0BC;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .detail-title{font-size:17px;font-weight:600}
@@ -158,8 +158,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .copied-tag.show{opacity:1}
 .bottom-acoes{display:flex;gap:8px;flex-wrap:wrap;margin-top:1.5rem;padding-top:1.25rem;border-top:1px solid var(--border)}
 .btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;font-size:13px;font-weight:500;border-radius:var(--radius-sm);border:1px solid;cursor:pointer;font-family:inherit;transition:all .15s}
-.btn-primary{background:#C52F01;color:#fff;border-color:var(--blue)}
-.btn-primary:hover{background:#1648c0}
+.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-primary:hover{background:#a92300}
 .btn-secondary{background:var(--surface);color:var(--text);border-color:var(--border)}
 .btn-secondary:hover{background:var(--bg)}
 .btn-danger{background:var(--red-light);color:var(--red);border-color:var(--red-border)}
@@ -248,7 +248,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .btn-alerta-pos{background:none;border:1px solid #81C784;border-radius:var(--radius-sm);cursor:pointer;font-size:11px;font-weight:500;color:#2E7D32;padding:3px 8px;display:inline-flex;align-items:center;gap:4px;font-family:inherit}
 .btn-alerta-rem{background:none;border:none;cursor:pointer;font-size:11px;color:var(--text3);padding:0;font-family:inherit;margin-left:auto;flex-shrink:0}
 .estat-section{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1.25rem;overflow:hidden}
-.estat-section-head{background:#C52F01;color:#fff;padding:.875rem 1.25rem;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.estat-section-head{background:var(--surface);color:var(--text);padding:.875rem 1.25rem;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border)}
 .estat-body{padding:1.25rem}
 .estat-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px}
 .estat-card{background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:1rem;text-align:center}
@@ -269,11 +269,12 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
   .topbar{padding:0 1rem}
 }
 .prazo-table{width:100%;border-collapse:collapse;font-size:13px}
-.prazo-table th{background:var(--surface2);color:var(--text2)!important;padding:8px 12px;text-align:center;font-weight:600;font-size:12px;border:1px solid var(--border)}
+.prazo-table th{background:var(--surface2);color:var(--text2);padding:8px 12px;text-align:center;font-weight:600;font-size:12px;border:1px solid var(--border)}
 .prazo-table th span{font-size:10px;font-weight:400;opacity:.85;display:block;margin-top:2px}
 .prazo-table td{padding:10px 12px;text-align:center;border:1px solid var(--border);font-weight:600;font-size:14px}
 .prazo-table .total-col{background:var(--blue-light);color:var(--blue);font-size:16px}
 .prazo-table thead .total-col{background:var(--blue);color:#fff}
+.prazo-table thead .total-col span{color:#fff}
 @media print{
   .topbar,.back-row,.bottom-acoes,.etapa-acoes,.comment-acoes,.btn{display:none!important}
   body{background:#fff}
@@ -1099,7 +1100,7 @@ function renderStats(){
       </div>
     </div>
     <div class="stat-card" style="border-color:var(--green-border)"><div class="stat-label" style="color:var(--green)">✅ Concluídos</div><div class="stat-value" style="color:var(--green)">${co}</div><div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Imóvel').length?'<div style="font-size:10px;color:var(--text2)">🏠 '+processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Imóvel').length+' imóvel</div>':''} ${processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Veículo').length?'<div style="font-size:10px;color:var(--text2)">🚗 '+processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Veículo').length+' veículo</div>':''}</div></div>
-    ${cancelados.length?`<div class="stat-card" style="border-color:#fcc"><div class="stat-label" style="color:var(--red)">🚫 Cancelados</div><div class="stat-value" style="color:var(--red)">${cancelados.length}</div><div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${cancelados.filter(p=>p.tipo==='Imóvel').length?'<div style="font-size:10px;color:var(--text2)">🏠 '+cancelados.filter(p=>p.tipo==='Imóvel').length+' imóvel</div>':''}${cancelados.filter(p=>p.tipo==='Veículo').length?'<div style="font-size:10px;color:var(--text2)">🚗 '+cancelados.filter(p=>p.tipo==='Veículo').length+' veículo</div>':''}</div></div>`:''}`
+    ${cancelados.length?`<div class="stat-card" style="border-color:var(--red-border)"><div class="stat-label" style="color:var(--red)">🚫 Cancelados</div><div class="stat-value" style="color:var(--red)">${cancelados.length}</div><div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${cancelados.filter(p=>p.tipo==='Imóvel').length?'<div style="font-size:10px;color:var(--text2)">🏠 '+cancelados.filter(p=>p.tipo==='Imóvel').length+' imóvel</div>':''}${cancelados.filter(p=>p.tipo==='Veículo').length?'<div style="font-size:10px;color:var(--text2)">🚗 '+cancelados.filter(p=>p.tipo==='Veículo').length+' veículo</div>':''}</div></div>`:''}`
 }
 
 function progresso(p){const t=p.etapas.length,d=p.etapas.filter(et=>et.tipo==='unico'?!!et.dataVal:(!!et.dataInicio&&!!et.dataFim)).length;return Math.round(d/t*100)}
@@ -1281,7 +1282,7 @@ function renderDetalhe(){
     <button class="btn btn-secondary btn-sm" onclick="verRelatorio()"><i class="ti ti-file-text"></i> Ver relatório</button>
     ${!p.concluido?`<button class="btn btn-secondary btn-sm" onclick="abrirModalEtapa()"><i class="ti ti-plus"></i> Etapa personalizada</button>`:''}`;
 
-  document.getElementById('detalhe-conteudo').innerHTML=`<div class="detail-card"><div class="detail-top"><div><div class="detail-title">${nomeExibicao(p)}</div><div class="detail-sub">${p.tipo} · ${p.subtipo}${p.grupo?' · '+p.grupo:''} · Aberto em ${p.dataCriacao}</div></div><span class="badge ${p.cancelado?'badge-cancelado':p.concluido?'badge-concluido':p.tipo==='Imóvel'?'badge-imovel':'badge-veiculo'}">${p.cancelado?'🚫 Cancelado':p.concluido?'✅ Concluído':p.tipo==='Imóvel'?'🏠 Imóvel':'🚗 Veículo'}</span></div><div class="detail-body">${p.cancelado?`<div style="background:#fff0f0;border:1px solid #fcc;border-radius:var(--radius);padding:12px 14px;margin-bottom:1.25rem"><div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">🚫 Processo cancelado em ${p.dataCancelamento||'—'}${diasCorridos(p.dataCriacao,p.dataCancelamento)!==null?' · '+diasCorridos(p.dataCriacao,p.dataCancelamento)+' dias corridos':''}</div><div style="font-size:13px;color:var(--text)">${p.motivoCancelamento||''}</div></div>`:''}${transferenciaWrap}<div class="section-head">Etapas do processo</div>${etapasHtml}${creditoWrap}<div class="bottom-acoes">${p.cancelado?`<button class="btn btn-secondary btn-sm" onclick="reativarProcesso()"><i class="ti ti-refresh"></i> Reativar processo</button>`:(p.concluido?`<button class="btn btn-secondary btn-sm" onclick="reabrirProcesso()"><i class="ti ti-lock-open"></i> Reabrir para edição</button>`:`<button class="btn btn-success btn-sm" onclick="confirmarConclusao()"><i class="ti ti-flag-check"></i> Concluir processo</button><button class="btn btn-danger btn-sm" onclick="abrirModalCancelar()"><i class="ti ti-ban"></i> Cancelar processo</button>`)}<button class="btn btn-danger btn-sm" onclick="excluirProcesso()"><i class="ti ti-trash"></i> Excluir</button></div></div></div>`;
+  document.getElementById('detalhe-conteudo').innerHTML=`<div class="detail-card"><div class="detail-top"><div><div class="detail-title">${nomeExibicao(p)}</div><div class="detail-sub">${p.tipo} · ${p.subtipo}${p.grupo?' · '+p.grupo:''} · Aberto em ${p.dataCriacao}</div></div><span class="badge ${p.cancelado?'badge-cancelado':p.concluido?'badge-concluido':p.tipo==='Imóvel'?'badge-imovel':'badge-veiculo'}">${p.cancelado?'🚫 Cancelado':p.concluido?'✅ Concluído':p.tipo==='Imóvel'?'🏠 Imóvel':'🚗 Veículo'}</span></div><div class="detail-body">${p.cancelado?`<div style="background:var(--red-light);border:1px solid var(--red-border);border-radius:var(--radius);padding:12px 14px;margin-bottom:1.25rem"><div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">🚫 Processo cancelado em ${p.dataCancelamento||'—'}${diasCorridos(p.dataCriacao,p.dataCancelamento)!==null?' · '+diasCorridos(p.dataCriacao,p.dataCancelamento)+' dias corridos':''}</div><div style="font-size:13px;color:var(--text)">${p.motivoCancelamento||''}</div></div>`:''}${transferenciaWrap}<div class="section-head">Etapas do processo</div>${etapasHtml}${creditoWrap}<div class="bottom-acoes">${p.cancelado?`<button class="btn btn-secondary btn-sm" onclick="reativarProcesso()"><i class="ti ti-refresh"></i> Reativar processo</button>`:(p.concluido?`<button class="btn btn-secondary btn-sm" onclick="reabrirProcesso()"><i class="ti ti-lock-open"></i> Reabrir para edição</button>`:`<button class="btn btn-success btn-sm" onclick="confirmarConclusao()"><i class="ti ti-flag-check"></i> Concluir processo</button><button class="btn btn-danger btn-sm" onclick="abrirModalCancelar()"><i class="ti ti-ban"></i> Cancelar processo</button>`)}<button class="btn btn-danger btn-sm" onclick="excluirProcesso()"><i class="ti ti-trash"></i> Excluir</button></div></div></div>`;
 }
 
 function voltarLista(){
