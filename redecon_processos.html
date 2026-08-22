@@ -64,6 +64,7 @@
   --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
   --shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
   --sidebar-bg:#44444A;
+  --chart-teal:#0F6E56; --chart-coral:#D85A30; --chart-purple:#6C5FB0; --chart-blue:#2E6FA8;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
@@ -1413,12 +1414,17 @@ function renderEstatisticas(){
   function fmt(v){return v!==null?'<span style="font-size:18px;font-weight:700">'+v+'</span><span style="font-size:11px;font-weight:400;margin-left:2px">dias</span>':'—'}
   function fmtR(v){if(!v)return'R$ 0,00';return'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2})}
   function linhaPrazo(nome,sub,val,max,cor){
-    if(val===null)return`<div style="display:flex;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid var(--border)"><div style="width:150px;flex-shrink:0"><div style="font-size:12.5px;font-weight:600;color:var(--text)">${nome}</div><div style="font-size:10.5px;color:var(--text3)">${sub}</div></div><div style="flex:1;font-size:12px;color:var(--text3)">—</div></div>`;
-    const pct=max?Math.min(100,(val/max*100)):0;
-    return`<div style="display:flex;align-items:center;gap:14px;padding:9px 0;border-bottom:1px solid var(--border)"><div style="width:150px;flex-shrink:0"><div style="font-size:12.5px;font-weight:600;color:var(--text)">${nome}</div><div style="font-size:10.5px;color:var(--text3)">${sub}</div></div><div style="flex:1;height:7px;background:var(--bg);border-radius:4px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${cor}"></div></div><div style="width:52px;text-align:right;font-size:13px;font-weight:700;color:var(--text)">${val}d</div></div>`;
+    if(val===null)return`<div style="display:flex;align-items:center;gap:12px;padding:8px 0"><div style="width:8px;height:8px;border-radius:2px;background:var(--border-strong);flex-shrink:0"></div><div style="width:140px;flex-shrink:0"><div style="font-size:12.5px;font-weight:600;color:var(--text)">${nome}</div><div style="font-size:10.5px;color:var(--text3)">${sub}</div></div><div style="flex:1;font-size:12px;color:var(--text3)">—</div></div>`;
+    const pct=max?Math.max(4,Math.min(100,(val/max*100))):0;
+    return`<div style="display:flex;align-items:center;gap:12px;padding:8px 0">
+      <div style="width:8px;height:8px;border-radius:2px;background:${cor};flex-shrink:0"></div>
+      <div style="width:140px;flex-shrink:0"><div style="font-size:12.5px;font-weight:600;color:var(--text)">${nome}</div><div style="font-size:10.5px;color:var(--text3)">${sub}</div></div>
+      <div style="flex:1;height:9px;background:var(--bg);border-radius:5px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${cor};border-radius:5px"></div></div>
+      <div style="width:56px;text-align:right;font-size:13.5px;font-weight:700;color:${cor}">${val}d</div>
+    </div>`;
   }
   function linhaTotal(nome,sub,val){
-    return`<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0 2px"><div><div style="font-size:12.5px;font-weight:700;color:var(--text)">${nome}</div><div style="font-size:10.5px;color:var(--text3)">${sub}</div></div><div style="font-size:19px;font-weight:700;color:var(--text)">${val!==null?val+'<span style="font-size:11px;font-weight:500;margin-left:2px;color:var(--text2)">dias</span>':'—'}</div></div>`;
+    return`<div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:8px;padding:12px 14px;margin:10px 0 4px"><div><div style="font-size:12.5px;font-weight:700;color:var(--text)">${nome}</div><div style="font-size:10.5px;color:var(--text3)">${sub}</div></div><div style="font-size:22px;font-weight:700;color:var(--text)">${val!==null?val+'<span style="font-size:11px;font-weight:500;margin-left:2px;color:var(--text2)">dias</span>':'—'}</div></div>`;
   }
   function compBar(total,segments){
     if(!total)return'';
@@ -1474,13 +1480,27 @@ function renderEstatisticas(){
     const garg=analisarGargalos(conc);
     if(!garg.length) return '';
     const icone=tipo==='Imóvel'?'🏠':'🚗';
+    const cores=['var(--chart-coral)','var(--chart-teal)','var(--chart-purple)','var(--chart-blue)','var(--border-strong)'];
+    const max=garg[0].media;
     return `<div class="estat-section">
       <div class="estat-section-head">${icone} Etapas com maior duração — ${tipo} · ${anoLabel}</div>
       <div class="estat-body">
         ${garg.map((g,i)=>{
-          return`<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)"><div style="font-size:20px;font-weight:700;color:var(--blue);width:28px">${i+1}</div><div style="flex:1"><div style="font-size:13px;font-weight:600">${g.nome}</div><div style="font-size:11px;color:var(--text2)">${g.count} processo${g.count!==1?'s':''}</div></div><div style="font-size:18px;font-weight:700;color:var(--blue)">${g.media} <span style="font-size:11px;font-weight:400">dias</span></div></div>`;
+          const pct=max?Math.max(4,(g.media/max*100)):0;
+          const cor=cores[i]||'var(--border-strong)';
+          return`<div style="margin-bottom:${i<garg.length-1?'14px':'2px'}">
+            <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:5px;gap:10px">
+              <div style="display:flex;align-items:baseline;gap:8px;min-width:0">
+                <span style="font-size:12px;font-weight:700;color:var(--text3);flex-shrink:0">${i+1}º</span>
+                <span style="font-size:13px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${g.nome}</span>
+                <span style="font-size:11px;color:var(--text3);flex-shrink:0">${g.count} proc.</span>
+              </div>
+              <div style="font-size:14px;font-weight:700;color:${cor};flex-shrink:0">${g.media}<span style="font-size:10.5px;font-weight:500;color:var(--text2)"> dias</span></div>
+            </div>
+            <div style="height:8px;background:var(--bg);border-radius:4px;overflow:hidden;margin-left:22px"><div style="height:100%;width:${pct}%;background:${cor};border-radius:4px"></div></div>
+          </div>`;
         }).join('')}
-        <div class="estat-note" style="margin-top:8px">Baseado em ${conc.length} processo${conc.length!==1?'s':''} concluído${conc.length!==1?'s':''}</div>
+        <div class="estat-note" style="margin-top:12px">Baseado em ${conc.length} processo${conc.length!==1?'s':''} concluído${conc.length!==1?'s':''}</div>
       </div>
     </div>`;
   }
@@ -1510,16 +1530,16 @@ document.getElementById('estatisticas-conteudo').innerHTML=`
       <div class="estat-section-head"><i class="ti ti-clock-hour-4"></i> Médias de prazo por etapa</div>
       <div class="estat-body">
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">🏠 Imóvel · ${concImovel.length} concluído${concImovel.length!==1?'s':''} · ${andImovel.length} em andamento</div>
-        ${linhaPrazo('Aprovação','Aprov − Envio análise',medAprov,medTotal,'var(--blue)')}
-        ${linhaPrazo('Com HS','Contrato − Envio análise',medHS,medTotal,'var(--blue)')}
-        ${linhaPrazo('Após contrato','Entrada RI − Assinatura',medApos,medTotal,'var(--blue)')}
-        ${linhaPrazo('No RI','Saída − Entrada RI',medRI,medTotal,'var(--blue)')}
+        ${linhaPrazo('Aprovação','Aprov − Envio análise',medAprov,medTotal,'var(--chart-teal)')}
+        ${linhaPrazo('Com HS','Contrato − Envio análise',medHS,medTotal,'var(--chart-coral)')}
+        ${linhaPrazo('Após contrato','Entrada RI − Assinatura',medApos,medTotal,'var(--chart-purple)')}
+        ${linhaPrazo('No RI','Saída − Entrada RI',medRI,medTotal,'var(--chart-blue)')}
         ${linhaTotal('Total médio','Pgto − Envio análise',medTotal)}
         ${todosImovel.length===0?'<div class="estat-note" style="text-align:left;margin-top:2px">Nenhum processo de imóvel ainda.</div>':''}
 
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 2px;padding-top:14px;border-top:1px solid var(--border)">🚗 Veículo · ${concVeiculo.length} concluído${concVeiculo.length!==1?'s':''} · ${andVeiculo.length} em andamento</div>
-        ${linhaPrazo('Aprovação','Aprov − Análise',medAprovV,medTotalV,'var(--amber)')}
-        ${linhaPrazo('Após aprovação','Assinatura − Aprovação',medAposV,medTotalV,'var(--amber)')}
+        ${linhaPrazo('Aprovação','Aprov − Análise',medAprovV,medTotalV,'var(--chart-teal)')}
+        ${linhaPrazo('Após aprovação','Assinatura − Aprovação',medAposV,medTotalV,'var(--chart-coral)')}
         ${linhaTotal('Total médio','Pgto − Análise',medTotalV)}
         ${todosVeiculo.length===0?'<div class="estat-note" style="text-align:left;margin-top:2px">Nenhum processo de veículo ainda.</div>':''}
         <div class="estat-note">Médias com todos os processos que já passaram por cada etapa (concluídos e em andamento)</div>
