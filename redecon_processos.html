@@ -53,34 +53,40 @@
 </script>
 <style>
 :root {
-  --bg:#F2E9D8; --surface:#fff; --surface2:#f8f8f6;
-  --border:#e5e5e0; --border-strong:#d0d0c8;
-  --text:#1a1a18; --text2:#6b6b65; --text3:#9b9b94;
-  --blue:#C52F01; --blue-light:#FAF3EA; --blue-border:#E8C9B8;
-  --green:#1D9E75; --green-light:#ecfdf3; --green-border:#a7f0c9;
-  --red:#c41c1c; --red-light:#fff0f0; --red-border:#fcc;
-  --amber:#92400e; --amber-light:#fffbeb; --amber-border:#fde68a;
+  --bg:#F4F4F5; --surface:#fff; --surface2:#FAFAFA;
+  --border:#E4E4E7; --border-strong:#D4D4D8;
+  --text:#18181B; --text2:#71717A; --text3:#A1A1AA;
+  --blue:#3F3F46; --blue-light:#F4F4F5; --blue-border:#D4D4D8;
+  --green:#3B6D11; --green-light:#EAF3DE; --green-border:#C0DD97;
+  --red:#A32D2D; --red-light:#FCEBEB; --red-border:#F7C1C1;
+  --amber:#854F0B; --amber-light:#FAEEDA; --amber-border:#FAC775;
   --radius:10px; --radius-sm:6px;
   --shadow:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
   --shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
+  --sidebar-bg:#44444A;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
-.topbar{background:var(--surface);border-bottom:1px solid #DDD0BC;padding:0 2rem;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
-.topbar-brand{font-size:15px;font-weight:600;display:flex;align-items:center;gap:8px}
-.brand-dot{width:8px;height:8px;border-radius:50%;background:#C52F01}
+.app-shell{display:flex;min-height:100vh}
+.sidebar{width:196px;flex-shrink:0;background:var(--sidebar-bg);padding:20px 12px;display:flex;flex-direction:column;gap:2px;position:sticky;top:0;height:100vh;overflow-y:auto}
+.sidebar-brand{display:flex;align-items:center;gap:8px;padding:0 8px 22px;color:#fff;font-size:14px;font-weight:600}
+.sidebar-sec{color:#B4B4B8;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;padding:0 8px;margin-bottom:6px}
+.sidebar-link{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:8px;color:#D4D4D8;font-size:13px;text-decoration:none;cursor:pointer;transition:background .15s;font-family:inherit;background:none;border:none;width:100%;text-align:left}
+.sidebar-link:hover{background:rgba(255,255,255,.08);color:#fff}
+.sidebar-link.active{background:rgba(255,255,255,.14);color:#fff;font-weight:500}
+.sidebar-user{margin-top:auto;padding:10px 8px 0;border-top:1px solid rgba(255,255,255,.1);font-size:11px;color:#B4B4B8;display:flex;flex-direction:column;gap:6px}
+.sidebar-user button{background:none;border:1px solid rgba(255,255,255,.2);color:#D4D4D8;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;align-self:flex-start}
+.main-area{flex:1;min-width:0}
+.brand-dot{width:8px;height:8px;border-radius:50%;background:#D85A30}
 .container{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
 .view{display:none}.view.active{display:block}
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:12px;flex-wrap:wrap}
 .page-title{font-size:20px;font-weight:600}
 .page-sub{font-size:13px;color:var(--text2);margin-top:2px}
-.stats{display:flex;flex-wrap:wrap;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:1.5rem;overflow:hidden}
-.stat-card{flex:1 1 140px;padding:1rem 1.25rem;border-right:1px solid var(--border);border-bottom:none}
-.stat-card:last-child{border-right:none}
-@media(max-width:1100px){.stat-card{flex-basis:33.33%;border-bottom:1px solid var(--border)}.stat-card:nth-child(3n){border-right:none}}
-@media(max-width:640px){.stat-card{flex-basis:50%}.stat-card:nth-child(3n){border-right:1px solid var(--border)}.stat-card:nth-child(2n){border-right:none}}
-.stat-label{font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600}
-.stat-value{font-size:28px;font-weight:700}
+.stats{display:flex;flex-wrap:wrap;gap:2rem;background:transparent;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.125rem 0;margin-bottom:1.5rem}
+.stat-card{padding:0}
+.stat-label{font-size:11.5px;color:var(--text2);margin-bottom:5px;font-weight:600}
+.stat-value{font-size:24px;font-weight:600}
 .tabs{display:flex;gap:2px;margin-bottom:1.25rem;background:transparent;border:none;border-bottom:1px solid var(--border);padding:0;flex-wrap:wrap;justify-content:flex-start;box-shadow:none;border-radius:0}
 .tab{padding:10px 4px;margin-right:20px;font-size:13px;font-weight:500;border-radius:0;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
 .tab:hover{color:var(--text);border-bottom-color:var(--border-strong)}
@@ -93,17 +99,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .processo-card.tipo-veiculo{border-left-color:var(--amber-border)}
 .processo-card.state-done{border-left-color:var(--green)}
 .processo-card.state-cancel{border-left-color:var(--red)}
-.pc-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;width:100%}
-.pc-kicker{font-size:10.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
-.pc-nome{font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
-.pc-meta{font-size:11.5px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pc-pct{font-size:16px;font-weight:700;color:var(--text);flex-shrink:0;white-space:nowrap}
-.pc-progress{height:3px;background:var(--bg);border-radius:3px;margin:8px 0 6px;overflow:hidden}
-.pc-progress-fill{height:100%;background:var(--blue);border-radius:4px;transition:width .3s}
+.pc-row{display:flex;align-items:center;gap:12px;width:100%}
+.pc-icon{width:32px;height:32px;border-radius:8px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.processo-card.tipo-veiculo .pc-icon{background:var(--amber-light)}
+.pc-main{flex:1;min-width:0}
+.pc-nome{font-size:13.5px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-meta{font-size:11.5px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-progress{width:84px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden;flex-shrink:0}
+.pc-progress-fill{height:100%;background:var(--blue);border-radius:3px;transition:width .3s}
 .processo-card.state-done .pc-progress-fill{background:var(--green)}
 .processo-card.state-cancel .pc-progress-fill{background:var(--red)}
-.pc-footer{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;color:var(--text2);flex-wrap:wrap}
-.pc-etapa{color:var(--text3)}
+.pc-pct{font-size:12.5px;font-weight:600;color:var(--text);flex-shrink:0;width:34px;text-align:right}
 .badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
 .badge-imovel{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border)}
 .badge-veiculo{background:var(--amber-light);color:var(--amber);border:1px solid var(--amber-border)}
@@ -278,7 +284,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 @media(max-width:600px){
   .campos-2,.field-row,.rel-resumo{grid-template-columns:1fr}
   .container{padding:1rem}
-  .topbar{padding:0 1rem}
+  .sidebar{width:56px;padding:16px 6px}
+  .sidebar-brand,.sidebar-sec,.sidebar-user{display:none}
+  .sidebar-link{justify-content:center;padding:10px 0}
 }
 .prazo-table{width:100%;border-collapse:collapse;font-size:13px}
 .prazo-table th{background:var(--surface2);color:var(--text2);padding:8px 12px;text-align:center;font-weight:600;font-size:12px;border:1px solid var(--border)}
@@ -288,7 +296,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .prazo-table thead .total-col{background:var(--blue);color:#fff}
 .prazo-table thead .total-col span{color:#fff}
 @media print{
-  .topbar,.back-row,.bottom-acoes,.etapa-acoes,.comment-acoes,.btn{display:none!important}
+  .sidebar,.back-row,.bottom-acoes,.etapa-acoes,.comment-acoes,.btn{display:none!important}
+  .main-area{margin:0}
   body{background:#fff}
   .rel-card{box-shadow:none;border:none}
 }
@@ -296,25 +305,25 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 </head>
 <body>
 <script type="module">
-  import { requireAuth, userBadgeHTML } from './auth.js';
+  import { requireAuth } from './auth.js';
   requireAuth().then(user=>{
     window._authUser = user;
-    const box = document.getElementById('topbar-userbox');
-    if(box) box.innerHTML = userBadgeHTML(user);
+    const box = document.getElementById('sidebar-userbox');
+    if(box) box.innerHTML = '<span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+user.email+'</span><button onclick="window._redeconLogout()">Sair</button>';
     if(window._bootAposAuth) window._bootAposAuth();
   });
 </script>
-<div class="topbar">
-  <div class="topbar-brand"><div class="brand-dot"></div>Redecon Consórcios</div>
-  <div style="display:flex;align-items:center;gap:12px">
-    <a href="index.html" style="font-size:12px;color:var(--text3);text-decoration:none">🏠 Hub</a>
-    <a href="painel-checklist-redecon.html" style="font-size:12px;color:var(--text3);text-decoration:none">📋 Checklist</a>
-    <span style="font-size:12px;color:var(--text3)">Gestão de Processos</span>
-    <span style="font-size:10px;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:2px 8px">v12</span>
-    <button class="btn btn-secondary btn-sm" onclick="voltarLista()" style="font-size:12px;padding:5px 12px"><i class="ti ti-home"></i> Início</button>
-    <div id="topbar-userbox"></div>
-  </div>
-</div>
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="sidebar-brand"><div class="brand-dot"></div>Redecon</div>
+    <div class="sidebar-sec">Menu</div>
+    <button class="sidebar-link active" onclick="voltarLista()"><i class="ti ti-list-check" style="font-size:16px"></i>Processos</button>
+    <button class="sidebar-link" onclick="abrirEstatisticas()"><i class="ti ti-chart-bar" style="font-size:16px"></i>Estatísticas</button>
+    <a class="sidebar-link" href="painel-checklist-redecon.html"><i class="ti ti-clipboard-list" style="font-size:16px"></i>Checklist</a>
+    <a class="sidebar-link" href="index.html"><i class="ti ti-home" style="font-size:16px"></i>Hub</a>
+    <div class="sidebar-user" id="sidebar-userbox"></div>
+  </aside>
+  <main class="main-area">
 <div class="container">
   <div id="view-lista" class="view active">
     <div class="page-header">
@@ -329,7 +338,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
         <button class="tab" onclick="filtrar('Veículo',this)">Veículo</button>
         <button class="tab" onclick="filtrar('concluido',this)">Concluídos</button>
         <button class="tab" onclick="filtrar('cancelado',this)">Cancelados</button>
-        <button class="tab" onclick="abrirEstatisticas(this)"><i class="ti ti-chart-bar" style="font-size:13px"></i> Estatísticas</button>
       </div>
       <div id="ano-selector" style="display:flex;gap:4px;flex-wrap:wrap"></div>
     </div>
@@ -357,6 +365,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
     </div>
     <div id="relatorio-conteudo"></div>
   </div>
+</div>
+  </main>
 </div>
 
 <div id="modal-novo" class="modal-backdrop">
@@ -1221,7 +1231,7 @@ function renderCard(p){
     // Se todas estão concluídas, retorna null (vai aparecer como "Concluído")
     return null;
   })();
-    const kicker=p.cancelado?(p.tipo==='Imóvel'?'🏠 Cancelado':'🚗 Cancelado'):(p.concluido?(p.tipo==='Imóvel'?'🏠 Concluído':'🚗 Concluído'):p.tipo==='Imóvel'?'🏠 Imóvel':'🚗 Veículo');
+    const icone=p.tipo==='Imóvel'?'🏠':'🚗';
     const stateCls=p.cancelado?'state-cancel':(p.concluido?'state-done':'');
     const tipoCls=p.tipo==='Imóvel'?'tipo-imovel':'tipo-veiculo';
     const etEnvio=p.etapas.find(et=>et.nome==='Envio p/ análise'||et.nome==='Processo em análise');
@@ -1230,9 +1240,10 @@ function renderCard(p){
     const dPgtoCard=etPgtoCard?etPgtoCard.dataVal:'';
     const diasCard=dEnvioCard?(p.concluido?diasCorridos(dEnvioCard,dPgtoCard||p.dataConclusao||today()):diasCorridos(dEnvioCard,today())):null;
     const dataConcCard=p.dataConclusao||dPgtoCard||'';
-    const diasStr=diasCard!==null?(p.concluido?`Concluído em ${dataConcCard?dataConcCard+' · ':''}${diasCard} dias`:`Em andamento há ${diasCard} dias`):(p.concluido&&dataConcCard?`Concluído em ${dataConcCard}`:'');
-    const etapaStr=!p.concluido&&etapaAtual?etapaAtual.nome:'';
-    return`<div class="processo-card ${tipoCls} ${stateCls}" onclick="abrirDetalhe('${p.id}')"><div class="pc-row"><div style="min-width:0"><div class="pc-kicker">${kicker}</div><div class="pc-nome">${nomeExibicao(p)}</div><div class="pc-meta">${p.subtipo}${p.grupo?' · '+p.grupo:''} · Aberto em ${p.dataCriacao}</div></div><div class="pc-pct">${pct}%</div></div><div class="pc-progress"><div class="pc-progress-fill" style="width:${pct}%"></div></div><div class="pc-footer"><span>${diasStr}</span><span class="pc-etapa">${etapaStr}</span></div></div>`
+    const diasStr=diasCard!==null?(p.concluido?`Concluído em ${dataConcCard?dataConcCard+' · ':''}${diasCard} dias`:`${diasCard}d em andamento`):(p.concluido&&dataConcCard?`Concluído em ${dataConcCard}`:'');
+    const etapaStr=p.cancelado?'Cancelado':(!p.concluido&&etapaAtual?etapaAtual.nome:(p.concluido?'Concluído':''));
+    const metaLine=[p.subtipo,p.grupo,diasStr,etapaStr].filter(Boolean).join(' · ');
+    return`<div class="processo-card ${tipoCls} ${stateCls}" onclick="abrirDetalhe('${p.id}')"><div class="pc-row"><div class="pc-icon">${icone}</div><div class="pc-main"><div class="pc-nome">${nomeExibicao(p)}</div><div class="pc-meta">${metaLine}</div></div><div class="pc-progress"><div class="pc-progress-fill" style="width:${pct}%"></div></div><div class="pc-pct">${pct}%</div></div></div>`
   })();
 }
 
@@ -1300,13 +1311,19 @@ function renderDetalhe(){
 function voltarLista(){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.querySelector('.tab').classList.add('active');
+  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+  const primeiroLink=document.querySelector('.sidebar-link');
+  if(primeiroLink) primeiroLink.classList.add('active');
   showView('view-lista');renderLista();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function abrirEstatisticas(btn){
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  btn.classList.add('active');
+  if(btn) btn.classList.add('active');
+  document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
+  const linkEstat=document.querySelectorAll('.sidebar-link')[1];
+  if(linkEstat) linkEstat.classList.add('active');
   showView('view-estatisticas');
   renderEstatisticas();
 }
