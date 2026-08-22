@@ -85,8 +85,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .tab{padding:10px 4px;margin-right:20px;font-size:13px;font-weight:500;border-radius:0;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
 .tab:hover{color:var(--text);border-bottom-color:var(--border-strong)}
 .tab.active{background:transparent;color:var(--blue);border-bottom:2px solid var(--blue);font-weight:600}
-.processo-card{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--border-strong);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:10px;cursor:pointer;transition:border-color .15s,box-shadow .15s;width:100%;box-sizing:border-box}
-.processo-card:hover{box-shadow:var(--shadow-md);border-left-color:var(--blue)}
+.proc-list-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.25rem}
+.processo-card{background:transparent;border:none;border-left:3px solid var(--border-strong);border-bottom:1px solid var(--border);border-radius:0;padding:.875rem 1.25rem;margin-bottom:0;cursor:pointer;transition:border-color .15s,background .15s;width:100%;box-sizing:border-box}
+.proc-list-card .processo-card:last-child{border-bottom:none}
+.processo-card:hover{background:var(--surface2);border-left-color:var(--blue)}
 .processo-card.tipo-imovel{border-left-color:var(--blue-border)}
 .processo-card.tipo-veiculo{border-left-color:var(--amber-border)}
 .processo-card.state-done{border-left-color:var(--green)}
@@ -96,7 +98,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .pc-nome{font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:1;-webkit-box-orient:vertical}
 .pc-meta{font-size:11.5px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pc-pct{font-size:16px;font-weight:700;color:var(--text);flex-shrink:0;white-space:nowrap}
-.pc-progress{height:4px;background:var(--bg);border-radius:4px;margin:12px 0 8px;overflow:hidden}
+.pc-progress{height:3px;background:var(--bg);border-radius:3px;margin:8px 0 6px;overflow:hidden}
 .pc-progress-fill{height:100%;background:var(--blue);border-radius:4px;transition:width .3s}
 .processo-card.state-done .pc-progress-fill{background:var(--green)}
 .processo-card.state-cancel .pc-progress-fill{background:var(--red)}
@@ -117,10 +119,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .detail-body{padding:1.25rem 1.5rem}
 .section-head{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:12px;margin-top:1.5rem}
 .section-head:first-child{margin-top:0}
-.etapa-block{background:var(--surface);border:1px solid var(--border);border-left:3px solid var(--border-strong);border-radius:var(--radius);padding:1rem 1.125rem;margin-bottom:10px;transition:border-color .15s}
-.etapa-block.done{border-left-color:var(--green)}
-.etapa-block.current{border-left-color:var(--blue)}
-.etapa-block.alert{border-left-color:var(--red)}
+.etapas-timeline{position:relative;padding-left:22px}
+.etapas-timeline::before{content:'';position:absolute;left:5px;top:10px;bottom:10px;width:2px;background:var(--border)}
+.etapa-block{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.125rem;margin-bottom:14px;margin-left:6px;transition:border-color .15s}
+.etapa-block::before{content:'';position:absolute;left:-27px;top:19px;width:11px;height:11px;border-radius:50%;background:var(--border-strong);border:2px solid var(--surface);box-shadow:0 0 0 1px var(--border-strong)}
+.etapa-block.done::before{background:var(--green);box-shadow:0 0 0 1px var(--green)}
+.etapa-block.current::before{background:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.etapa-block.alert::before{background:var(--red);box-shadow:0 0 0 1px var(--red)}
 .etapa-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
 .etapa-nome{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .status-pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
@@ -1139,11 +1144,11 @@ function renderListaFiltro(tipo){
     let html='';
     if(emAnalise.length){
       html+=`<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin:0 0 10px 2px">Em análise (${emAnalise.length})</div>`;
-      html+=emAnalise.sort((a,b)=>ultimaInteracao(b)-ultimaInteracao(a)).map(p=>renderCard(p)).join('');
+      html+=`<div class="proc-list-card">`+emAnalise.sort((a,b)=>ultimaInteracao(b)-ultimaInteracao(a)).map(p=>renderCard(p)).join('')+`</div>`;
     }
     if(aguardando.length){
       html+=`<div style="font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin:${emAnalise.length?'1.25rem':0} 0 10px 2px">Aguardando documentos (${aguardando.length})</div>`;
-      html+=aguardando.sort((a,b)=>ultimaInteracao(b)-ultimaInteracao(a)).map(p=>renderCard(p)).join('');
+      html+=`<div class="proc-list-card">`+aguardando.sort((a,b)=>ultimaInteracao(b)-ultimaInteracao(a)).map(p=>renderCard(p)).join('')+`</div>`;
     }
     if(!html) html='<div class="empty"><i class="ti ti-inbox"></i>Nenhum processo em andamento.</div>';
     el.innerHTML=html;
@@ -1160,7 +1165,7 @@ function renderListaFiltro(tipo){
   if(!lista.length){el.innerHTML='<div class="empty"><i class="ti ti-inbox"></i>Nenhum processo encontrado.<br>Clique em "Novo processo" para começar.</div>';return}
 
   if(tipo==='cancelado'){
-    el.innerHTML='<div class="group-label">Cancelados ('+lista.length+')</div>'+lista.map(p=>renderCard(p)).join('');
+    el.innerHTML='<div class="group-label">Cancelados ('+lista.length+')</div><div class="proc-list-card">'+lista.map(p=>renderCard(p)).join('')+'</div>';
     return;
   }
 
@@ -1170,9 +1175,9 @@ function renderListaFiltro(tipo){
     const concA=includeConcluidos?sortByInteracao(procs.filter(p=>p.concluido&&!p.cancelado)):[];
     const total=emA.length+aguA.length+(includeConcluidos?concA.length:0);
     let html='<div class="col-header">'+icone+' '+titulo+' ('+total+')</div>';
-    if(emA.length) html+='<div class="group-label">Em análise ('+emA.length+')</div>'+emA.map(p=>renderCard(p)).join('');
-    if(aguA.length) html+='<div class="group-label">Aguardando docs ('+aguA.length+')</div>'+aguA.map(p=>renderCard(p)).join('');
-    if(concA.length) html+='<div class="group-label">Concluídos ('+concA.length+')</div>'+concA.map(p=>renderCard(p)).join('');
+    if(emA.length) html+='<div class="group-label">Em análise ('+emA.length+')</div><div class="proc-list-card">'+emA.map(p=>renderCard(p)).join('')+'</div>';
+    if(aguA.length) html+='<div class="group-label">Aguardando docs ('+aguA.length+')</div><div class="proc-list-card">'+aguA.map(p=>renderCard(p)).join('')+'</div>';
+    if(concA.length) html+='<div class="group-label">Concluídos ('+concA.length+')</div><div class="proc-list-card">'+concA.map(p=>renderCard(p)).join('')+'</div>';
     if(!emA.length&&!aguA.length&&!concA.length) html+='<div class="empty" style="padding:1.5rem"><i class="ti ti-inbox"></i>Nenhum processo em andamento.</div>';
     return html;
   }
@@ -1190,9 +1195,9 @@ function renderListaFiltro(tipo){
     const aguardandoL=sortByInteracao(lista.filter(p=>!p.concluido&&!p.cancelado&&!isEmAnalise(p)));
     const concluidosL=sortByInteracao(lista.filter(p=>p.concluido));
     let html='';
-    if(emAnaliseL.length) html+='<div class="group-label">Em análise ('+emAnaliseL.length+')</div>'+emAnaliseL.map(p=>renderCard(p)).join('');
-    if(aguardandoL.length) html+='<div class="group-label" style="margin-top:'+(emAnaliseL.length?'1.25rem':'0')+'">Aguardando docs ('+aguardandoL.length+')</div>'+aguardandoL.map(p=>renderCard(p)).join('');
-    if(concluidosL.length) html+='<div class="group-label" style="margin-top:'+(emAnaliseL.length||aguardandoL.length?'1.25rem':'0')+'">Concluídos ('+concluidosL.length+')</div>'+concluidosL.map(p=>renderCard(p)).join('');
+    if(emAnaliseL.length) html+='<div class="group-label">Em análise ('+emAnaliseL.length+')</div><div class="proc-list-card">'+emAnaliseL.map(p=>renderCard(p)).join('')+'</div>';
+    if(aguardandoL.length) html+='<div class="group-label" style="margin-top:'+(emAnaliseL.length?'1.25rem':'0')+'">Aguardando docs ('+aguardandoL.length+')</div><div class="proc-list-card">'+aguardandoL.map(p=>renderCard(p)).join('')+'</div>';
+    if(concluidosL.length) html+='<div class="group-label" style="margin-top:'+(emAnaliseL.length||aguardandoL.length?'1.25rem':'0')+'">Concluídos ('+concluidosL.length+')</div><div class="proc-list-card">'+concluidosL.map(p=>renderCard(p)).join('')+'</div>';
     if(!html) html='<div class="empty"><i class="ti ti-inbox"></i>Nenhum processo encontrado.</div>';
     el.innerHTML=html;
     return;
@@ -1289,7 +1294,7 @@ function renderDetalhe(){
     <button class="btn btn-secondary btn-sm" onclick="verRelatorio()"><i class="ti ti-file-text"></i> Ver relatório</button>
     ${!p.concluido?`<button class="btn btn-secondary btn-sm" onclick="abrirModalEtapa()"><i class="ti ti-plus"></i> Etapa personalizada</button>`:''}`;
 
-  document.getElementById('detalhe-conteudo').innerHTML=`<div class="detail-card"><div class="detail-top"><div><div class="detail-title">${nomeExibicao(p)}</div><div class="detail-sub">${p.tipo} · ${p.subtipo}${p.grupo?' · '+p.grupo:''} · Aberto em ${p.dataCriacao}</div></div><span class="badge ${p.cancelado?'badge-cancelado':p.concluido?'badge-concluido':p.tipo==='Imóvel'?'badge-imovel':'badge-veiculo'}">${p.cancelado?'🚫 Cancelado':p.concluido?'✅ Concluído':p.tipo==='Imóvel'?'🏠 Imóvel':'🚗 Veículo'}</span></div><div class="detail-body">${p.cancelado?`<div style="background:var(--red-light);border:1px solid var(--red-border);border-radius:var(--radius);padding:12px 14px;margin-bottom:1.25rem"><div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">🚫 Processo cancelado em ${p.dataCancelamento||'—'}${diasCorridos(p.dataCriacao,p.dataCancelamento)!==null?' · '+diasCorridos(p.dataCriacao,p.dataCancelamento)+' dias corridos':''}</div><div style="font-size:13px;color:var(--text)">${p.motivoCancelamento||''}</div></div>`:''}${transferenciaWrap}<div class="section-head">Etapas do processo</div>${etapasHtml}${creditoWrap}<div class="bottom-acoes">${p.cancelado?`<button class="btn btn-secondary btn-sm" onclick="reativarProcesso()"><i class="ti ti-refresh"></i> Reativar processo</button>`:(p.concluido?`<button class="btn btn-secondary btn-sm" onclick="reabrirProcesso()"><i class="ti ti-lock-open"></i> Reabrir para edição</button>`:`<button class="btn btn-success btn-sm" onclick="confirmarConclusao()"><i class="ti ti-flag-check"></i> Concluir processo</button><button class="btn btn-danger btn-sm" onclick="abrirModalCancelar()"><i class="ti ti-ban"></i> Cancelar processo</button>`)}<button class="btn btn-danger btn-sm" onclick="excluirProcesso()"><i class="ti ti-trash"></i> Excluir</button></div></div></div>`;
+  document.getElementById('detalhe-conteudo').innerHTML=`<div class="detail-card"><div class="detail-top"><div><div class="detail-title">${nomeExibicao(p)}</div><div class="detail-sub">${p.tipo} · ${p.subtipo}${p.grupo?' · '+p.grupo:''} · Aberto em ${p.dataCriacao}</div></div><span class="badge ${p.cancelado?'badge-cancelado':p.concluido?'badge-concluido':p.tipo==='Imóvel'?'badge-imovel':'badge-veiculo'}">${p.cancelado?'🚫 Cancelado':p.concluido?'✅ Concluído':p.tipo==='Imóvel'?'🏠 Imóvel':'🚗 Veículo'}</span></div><div class="detail-body">${p.cancelado?`<div style="background:var(--red-light);border:1px solid var(--red-border);border-radius:var(--radius);padding:12px 14px;margin-bottom:1.25rem"><div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">🚫 Processo cancelado em ${p.dataCancelamento||'—'}${diasCorridos(p.dataCriacao,p.dataCancelamento)!==null?' · '+diasCorridos(p.dataCriacao,p.dataCancelamento)+' dias corridos':''}</div><div style="font-size:13px;color:var(--text)">${p.motivoCancelamento||''}</div></div>`:''}${transferenciaWrap}<div class="section-head">Etapas do processo</div><div class="etapas-timeline">${etapasHtml}</div>${creditoWrap}<div class="bottom-acoes">${p.cancelado?`<button class="btn btn-secondary btn-sm" onclick="reativarProcesso()"><i class="ti ti-refresh"></i> Reativar processo</button>`:(p.concluido?`<button class="btn btn-secondary btn-sm" onclick="reabrirProcesso()"><i class="ti ti-lock-open"></i> Reabrir para edição</button>`:`<button class="btn btn-success btn-sm" onclick="confirmarConclusao()"><i class="ti ti-flag-check"></i> Concluir processo</button><button class="btn btn-danger btn-sm" onclick="abrirModalCancelar()"><i class="ti ti-ban"></i> Cancelar processo</button>`)}<button class="btn btn-danger btn-sm" onclick="excluirProcesso()"><i class="ti ti-trash"></i> Excluir</button></div></div></div>`;
 }
 
 function voltarLista(){
@@ -1380,6 +1385,14 @@ function renderEstatisticas(){
 
   function fmt(v){return v!==null?'<span style="font-size:18px;font-weight:700">'+v+'</span><span style="font-size:11px;font-weight:400;margin-left:2px">dias</span>':'—'}
   function fmtR(v){if(!v)return'R$ 0,00';return'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2})}
+  function compBar(total,segments){
+    if(!total)return'';
+    const validos=segments.filter(s=>s.val>0);
+    if(!validos.length)return'';
+    const bars=validos.map(s=>'<div style="width:'+(s.val/total*100).toFixed(1)+'%;background:'+s.color+';height:100%" title="'+s.label+': '+s.val+'d"></div>').join('');
+    const legend=validos.map(s=>'<div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--text2)"><span style="width:8px;height:8px;border-radius:2px;background:'+s.color+';display:inline-block;flex-shrink:0"></span>'+s.label+' · '+s.val+'d</div>').join('');
+    return '<div style="margin-top:1.125rem"><div style="display:flex;height:10px;border-radius:5px;overflow:hidden;background:var(--bg)">'+bars+'</div><div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:10px">'+legend+'</div></div>';
+  }
 
   // Créditos
   const creditosImovel=processos.filter(p=>p.tipo==='Imóvel'&&(p.credito||p.liberacoes?.some(l=>l.valor))).map(p=>{
@@ -1449,7 +1462,7 @@ document.getElementById('estatisticas-conteudo').innerHTML=`
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;flex-wrap:wrap">
       <div style="font-size:14px;font-weight:600;color:var(--text)">Ano de referência:</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
-        ${['todos',...anosDisponiveis].map(a=>`<button onclick="window._estatAnoSel='${a}';renderEstatisticas()" style="padding:5px 14px;font-size:13px;font-weight:500;border-radius:var(--radius-sm);border:1px solid ${anoSel===a?'var(--blue)':'var(--border)'};background:${anoSel===a?'var(--blue)':'var(--surface)'};color:${anoSel===a?'#fff':'var(--text2)'};cursor:pointer">${a==='todos'?'Todos':a}</button>`).join('')}
+        ${['todos',...anosDisponiveis].map(a=>`<button onclick="window._estatAnoSel='${a}';renderEstatisticas()" style="padding:5px 14px;font-size:13px;font-weight:${anoSel===a?'600':'500'};border-radius:20px;border:1px solid ${anoSel===a?'var(--blue-border)':'var(--border)'};background:${anoSel===a?'var(--blue-light)':'var(--surface)'};color:${anoSel===a?'var(--blue)':'var(--text2)'};cursor:pointer;transition:all .15s">${a==='todos'?'Todos':a}</button>`).join('')}
       </div>
     </div>
     <div class="estat-section">
@@ -1462,6 +1475,7 @@ document.getElementById('estatisticas-conteudo').innerHTML=`
           <div class="estat-card"><div class="estat-card-label">No RI</div><div class="estat-card-sub">Saída − Entrada RI</div><div class="estat-card-val blue">${fmt(medRI)}</div></div>
           <div class="estat-card" style="border-color:var(--blue-border);background:var(--blue-light)"><div class="estat-card-label" style="color:var(--blue)">Total médio</div><div class="estat-card-sub">Pgto − Envio análise</div><div class="estat-card-val blue">${fmt(medTotal)}</div></div>
         </div>
+        ${compBar(medTotal,[{label:'Com HS',val:medHS||0,color:'var(--blue)'},{label:'Após contrato',val:medApos||0,color:'var(--amber)'},{label:'No RI',val:medRI||0,color:'var(--green)'},{label:'Outras etapas',val:Math.max((medTotal||0)-(medHS||0)-(medApos||0)-(medRI||0),0),color:'var(--border-strong)'}])}
         ${todosImovel.length===0?'<div class="estat-note">Nenhum processo de imóvel ainda.</div>':'<div class="estat-note">Média calculada com todos os processos que já passaram por cada etapa (concluídos e em andamento)</div>'}
       </div>
     </div>
@@ -1473,6 +1487,7 @@ document.getElementById('estatisticas-conteudo').innerHTML=`
           <div class="estat-card"><div class="estat-card-label">Após aprovação</div><div class="estat-card-sub">Assinatura − Aprovação</div><div class="estat-card-val blue">${fmt(medAposV)}</div></div>
           <div class="estat-card" style="border-color:var(--blue-border);background:var(--blue-light)"><div class="estat-card-label" style="color:var(--blue)">Total médio</div><div class="estat-card-sub">Pgto − Análise</div><div class="estat-card-val blue">${fmt(medTotalV)}</div></div>
         </div>
+        ${compBar(medTotalV,[{label:'Após aprovação',val:medAposV||0,color:'var(--blue)'},{label:'Outras etapas',val:Math.max((medTotalV||0)-(medAprovV||0)-(medAposV||0),0),color:'var(--border-strong)'}])}
         ${todosVeiculo.length===0?'<div class="estat-note">Nenhum processo de veículo ainda.</div>':'<div class="estat-note">Média calculada com todos os processos que já passaram por cada etapa (concluídos e em andamento)</div>'}
       </div>
     </div>
