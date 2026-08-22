@@ -185,23 +185,49 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:1.25rem}
 .rel-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden}
-.rel-top{background:#C52F01;color:#fff;padding:1.5rem}
-.rel-top-title{font-size:18px;font-weight:600;margin-bottom:4px}
-.rel-top-sub{font-size:13px;opacity:.8}
+.rel-top{background:var(--surface);color:var(--text);padding:1.375rem 1.5rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.rel-top-title{font-size:18px;font-weight:600;margin-bottom:3px;color:var(--text)}
+.rel-top-sub{font-size:12.5px;color:var(--text2)}
+.rel-status-pill{font-size:11.5px;font-weight:600;padding:5px 12px;border-radius:20px;white-space:nowrap;flex-shrink:0}
+.rel-status-pill.ok{background:var(--green-light);color:var(--green);border:1px solid var(--green-border)}
+.rel-status-pill.andamento{background:var(--amber-light);color:var(--amber);border:1px solid var(--amber-border)}
+.rel-status-pill.cancel{background:var(--red-light);color:var(--red);border:1px solid var(--red-border)}
 .rel-body{padding:1.5rem}
-.rel-resumo{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--bg);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem}
+.rel-resumo{display:grid;grid-template-columns:1fr 1fr;gap:8px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem}
 .rel-row{font-size:13px;padding:4px 0;display:flex;flex-direction:column;gap:2px}
 .rel-row-label{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em}
 .rel-row-val{font-weight:500}
 
-.rel-etapa{border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px}
-.rel-etapa.done{border-color:var(--green-border)}
-.rel-etapa-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap;margin-bottom:4px}
-.rel-etapa-nome{font-size:13px;font-weight:600}
+.rel-etapa{padding:10px 0;border-bottom:1px solid var(--border)}
+.rel-etapa:last-child{border-bottom:none}
+.rel-etapa-header{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;flex-wrap:wrap}
+.rel-etapa-nome{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px}
+.rel-etapa-nome::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--border-strong);flex-shrink:0}
+.rel-etapa.done .rel-etapa-nome::before{background:var(--green)}
 .rel-etapa-info{font-size:12px;color:var(--text2);text-align:right}
 .rel-comment{font-size:12px;border-top:1px solid var(--border);margin-top:6px;padding-top:6px}
 .rel-comment-meta{font-size:11px;color:var(--text3);margin-bottom:2px;font-weight:500}
 .rel-comment.intercorrencia{background:var(--amber-light);border-radius:var(--radius-sm);padding:6px 10px;border-left:3px solid var(--amber);margin-top:4px}
+
+.rel-stepper{position:relative;padding:6px 6px 2px;margin-bottom:1.5rem}
+.rel-stepper-track{position:absolute;top:19px;left:20px;right:20px;height:2px;background:var(--border)}
+.rel-stepper-progress{position:absolute;top:19px;left:20px;height:2px;background:var(--blue)}
+.rel-stepper-row{display:flex;justify-content:space-between;position:relative}
+.rel-stepper-item{display:flex;flex-direction:column;align-items:center;width:76px}
+.rel-stepper-dot{width:18px;height:18px;border-radius:50%;border:3px solid var(--surface);box-shadow:0 0 0 1px var(--border-strong);background:var(--surface);z-index:1}
+.rel-stepper-item.done .rel-stepper-dot{background:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.rel-stepper-label{font-size:11px;font-weight:600;color:var(--text);margin-top:8px;text-align:center;line-height:1.25}
+.rel-stepper-date{font-size:10.5px;color:var(--text3);margin-top:1px}
+
+.rel-metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.25rem}
+.rel-metric{background:var(--surface);padding:14px 16px}
+.rel-metric-label{font-size:11px;color:var(--text2);font-weight:600;margin-bottom:4px}
+.rel-metric-val{font-size:19px;font-weight:700;color:var(--text)}
+.rel-metric-val small{font-size:12px;font-weight:500;color:var(--text2)}
+.rel-metric-sub{font-size:11px;margin-top:3px}
+.rel-metric-sub.ok{color:var(--green)}
+.rel-metric-sub.alert{color:var(--amber)}
+.rel-metric-sub.info{color:var(--text3)}
 .intercorrencia-tag{font-size:10px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px;display:flex;align-items:center;gap:4px}
 .total-box{background:var(--blue-light);border:1px solid var(--blue-border);border-radius:var(--radius);padding:1rem 1.25rem;margin-bottom:1.25rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px}.total-box.andamento{background:var(--amber-light);border-color:var(--amber-border)}.total-box.andamento .total-box-label,.total-box.andamento .total-box-val{color:var(--amber)}
 .total-box-label{font-size:13px;color:var(--blue);font-weight:500}
@@ -243,11 +269,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
   .topbar{padding:0 1rem}
 }
 .prazo-table{width:100%;border-collapse:collapse;font-size:13px}
-.prazo-table th{background:#C52F01;color:#fff!important;padding:8px 12px;text-align:center;font-weight:600;font-size:12px}
+.prazo-table th{background:var(--surface2);color:var(--text2)!important;padding:8px 12px;text-align:center;font-weight:600;font-size:12px;border:1px solid var(--border)}
 .prazo-table th span{font-size:10px;font-weight:400;opacity:.85;display:block;margin-top:2px}
 .prazo-table td{padding:10px 12px;text-align:center;border:1px solid var(--border);font-weight:600;font-size:14px}
 .prazo-table .total-col{background:var(--blue-light);color:var(--blue);font-size:16px}
-.prazo-table thead .total-col{background:#1040b0;color:#fff}
+.prazo-table thead .total-col{background:var(--blue);color:#fff}
 @media print{
   .topbar,.back-row,.bottom-acoes,.etapa-acoes,.comment-acoes,.btn{display:none!important}
   body{background:#fff}
@@ -312,6 +338,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
   <div id="view-relatorio" class="view">
     <div class="back-row">
       <button class="btn btn-secondary" onclick="voltarLista()"><i class="ti ti-arrow-left"></i> Voltar</button>
+      <button class="btn btn-secondary" id="btn-copiar-resumo" onclick="copiarResumoRelatorio()"><i class="ti ti-copy"></i> Copiar resumo</button>
       <button class="btn btn-secondary" onclick="abrirEtapas()"><i class="ti ti-edit"></i> Editar processo</button>
       <button class="btn btn-primary" onclick="window.print()"><i class="ti ti-printer"></i> Imprimir / PDF</button>
     </div>
@@ -1723,6 +1750,25 @@ function removerComentario(etIdx,cIdx){if(!confirm('Remover comentário?'))retur
 
 function verRelatorio(){showView('view-relatorio');renderRelatorio()}
 
+function copiarResumoRelatorio(){
+  const p=pSel;
+  if(!p) return;
+  const linhas=[
+    nomeExibicao(p),
+    `${p.tipo} — ${p.subtipo}${p.grupo?' · Grupo '+p.grupo:''}`,
+    `Status: ${p.cancelado?'Cancelado':(p.concluido?'Concluído em '+p.dataConclusao:'Em andamento')}`
+  ];
+  const totalEl=document.querySelector('#relatorio-conteudo .total-box-val');
+  if(totalEl) linhas.push('Duração total: '+totalEl.textContent.trim());
+  navigator.clipboard.writeText(linhas.join('\n')).then(()=>{
+    const btn=document.getElementById('btn-copiar-resumo');
+    if(!btn) return;
+    const original=btn.innerHTML;
+    btn.innerHTML='<i class="ti ti-check"></i> Copiado';
+    setTimeout(()=>{btn.innerHTML=original},1800);
+  });
+}
+
 function renderReembolsoRelatorio(p){
   const etRe=p.etapas.find(et=>et.tipo==='reembolso');
   if(!etRe||!etRe.reembolsos||!etRe.reembolsos.some(r=>r.descricao||r.valor)) return '';
@@ -1803,10 +1849,42 @@ function renderRelatorio(){
   }
   const gargalosHtml='';
   const totalBox=totalDias!==null?`<div class="total-box${emAndamento?' andamento':''}"><span class="total-box-label"><i class="ti ti-calendar-stats"></i> Duração total${emAndamento?' (em andamento — até hoje)':' (envio à análise → pgto crédito)'}</span><span class="total-box-val">${totalDias} dias corridos</span></div>`:'';
-  function marcoPill(dias,max){if(dias===null)return'';if(dias<=max)return`<span style="background:#E8F5E9;color:#2E7D32;border:1px solid #81C784;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">✅ Dentro do prazo (${dias}d)</span>`;return`<span style="background:#FFF3E0;color:#E65100;border:1px solid #FFB74D;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">⚠️ Acima do prazo (${dias}d)</span>`;}
+  function marcoSub(dias,max){if(dias===null)return'';return dias<=max?`<div class="rel-metric-sub ok">Dentro do prazo</div>`:`<div class="rel-metric-sub alert">Acima do prazo (até ${max}d)</div>`;}
   const prazoOutras=(totalDias!==null&&prazoHS!==null&&prazoRI!==null)?Math.max(totalDias-prazoHS-prazoRI-(prazoRI2!==null?prazoRI2:0),0):null;
-  const outrasBox=prazoOutras!==null?`<div style="background:#E3F2FD;border:1px solid #64B5F6;border-radius:var(--radius);padding:12px 14px"><div style="font-size:11px;font-weight:600;color:#1565C0;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Ação das partes (entre etapas)</div><div style="font-size:18px;font-weight:700;margin-bottom:4px;color:#1565C0">${prazoOutras} dias</div><span style="background:#fff;color:#1565C0;border:1px solid #90CAF9;padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600">📎 Assinaturas, envio de docs, taxas</span></div>`:``;
-  const marcosBox=p.tipo==='Imóvel'?`<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1.25rem"><div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px"><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Com a HS (esperado até 35 dias)</div><div style="font-size:18px;font-weight:700;margin-bottom:4px">${prazoHS!==null?prazoHS+' dias':' — '}</div>${marcoPill(prazoHS,35)}</div><div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px"><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">No RI (esperado até 30 dias)</div><div style="font-size:18px;font-weight:700;margin-bottom:4px">${prazoRI!==null?prazoRI+' dias':'—'}</div>${marcoPill(prazoRI,30)}</div>${prazoRI2!==null?`<div style="background:var(--bg);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px"><div style="font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">No RI — 2º contrato (esperado até 30 dias)</div><div style="font-size:18px;font-weight:700;margin-bottom:4px">${prazoRI2} dias</div>${marcoPill(prazoRI2,30)}</div>`:``}${outrasBox}</div>`:'';
+  const outrasBox=prazoOutras!==null?`<div class="rel-metric"><div class="rel-metric-label">Ação das partes</div><div class="rel-metric-val">${prazoOutras}<small> dias</small></div><div class="rel-metric-sub info">Assinaturas, docs, taxas</div></div>`:``;
+  const marcosBox=p.tipo==='Imóvel'?`<div class="rel-metric-grid"><div class="rel-metric"><div class="rel-metric-label">Com a HS (até 35 dias)</div><div class="rel-metric-val">${prazoHS!==null?prazoHS+'<small> dias</small>':'—'}</div>${marcoSub(prazoHS,35)}</div><div class="rel-metric"><div class="rel-metric-label">No RI (até 30 dias)</div><div class="rel-metric-val">${prazoRI!==null?prazoRI+'<small> dias</small>':'—'}</div>${marcoSub(prazoRI,30)}</div>${prazoRI2!==null?`<div class="rel-metric"><div class="rel-metric-label">No RI — 2º contrato (até 30 dias)</div><div class="rel-metric-val">${prazoRI2}<small> dias</small></div>${marcoSub(prazoRI2,30)}</div>`:``}${outrasBox}</div>`:'';
+  function relStepper(milestones){
+    const doneCount=milestones.filter(m=>m.date).length;
+    const frac=milestones.length>1?Math.max(0,Math.min(1,(doneCount-1)/(milestones.length-1))):0;
+    const items=milestones.map(m=>`<div class="rel-stepper-item${m.date?' done':''}"><div class="rel-stepper-dot"></div><div class="rel-stepper-label">${m.label}</div><div class="rel-stepper-date">${m.date||'—'}</div></div>`).join('');
+    return `<div class="section-head">Etapas principais</div><div class="rel-stepper"><div class="rel-stepper-track"></div><div class="rel-stepper-progress" style="width:calc((100% - 40px) * ${frac.toFixed(2)})"></div><div class="rel-stepper-row">${items}</div></div>`;
+  }
+  let stepperHtml='';
+  if(p.tipo==='Imóvel'){
+    const etapaEnvio2=p.etapas.find(et=>et.nome==='Envio p/ análise');
+    const etapaAprov2=p.etapas.find(et=>et.nome==='Aprovação de cadastro');
+    const etapaContrato2=p.etapas.find(et=>et.nome==='Contrato p/ assinatura'||et.nome==='Envio de contrato');
+    const etapaRI2Marco=p.etapas.find(et=>et.nome==='Registro em cartório (RI)');
+    stepperHtml=relStepper([
+      {label:'Envio análise',date:etapaEnvio2?etapaEnvio2.dataVal:''},
+      {label:'Aprovação',date:etapaAprov2?etapaAprov2.dataVal:''},
+      {label:'Assinatura',date:etapaContrato2?(etapaContrato2.dataFim||etapaContrato2.dataVal):''},
+      {label:'Registro (RI)',date:etapaRI2Marco?(etapaRI2Marco.dataFim||etapaRI2Marco.dataInicio):''},
+      {label:'Pagamento',date:dPgto||''}
+    ]);
+  } else {
+    const etapaAnalise2=p.etapas.find(et=>et.nome==='Processo em análise');
+    const etapaAprovV2=p.etapas.find(et=>et.nome==='Aprovação');
+    const etapaAssin2=p.etapas.find(et=>et.nome==='Assinatura + Docs');
+    const etapaGravame2=p.etapas.find(et=>et.nome==='Inclusão gravame');
+    stepperHtml=relStepper([
+      {label:'Análise',date:etapaAnalise2?etapaAnalise2.dataVal:''},
+      {label:'Aprovação',date:etapaAprovV2?etapaAprovV2.dataVal:''},
+      {label:'Assinatura',date:etapaAssin2?etapaAssin2.dataVal:''},
+      {label:'Gravame',date:etapaGravame2?etapaGravame2.dataVal:''},
+      {label:'Pagamento',date:dPgto||''}
+    ]);
+  }
   const etapasHtml=p.etapas.map(et=>{
     let dataInfo='';
     const done=et.tipo==='unico'?!!et.dataVal:(!!et.dataInicio&&!!et.dataFim);
@@ -1862,7 +1940,9 @@ function renderRelatorio(){
     </tr></tbody>
   </table>
   </div>`;
-  document.getElementById('relatorio-conteudo').innerHTML=`<div class="rel-card"><div class="rel-top"><div class="rel-top-title">Relatório — ${nomeExibicao(p)}</div><div class="rel-top-sub">Redecon Consórcios · Gerado em ${today()}</div></div><div class="rel-body"><div class="section-head">Resumo</div><div class="rel-resumo"><div class="rel-row"><div class="rel-row-label">Consorciado</div><div class="rel-row-val">${nomeExibicao(p)}</div></div><div class="rel-row"><div class="rel-row-label">Tipo / Subtipo</div><div class="rel-row-val">${p.tipo} — ${p.subtipo}</div></div><div class="rel-row"><div class="rel-row-label">Grupo / Cota</div><div class="rel-row-val">${p.grupo||'—'}</div></div><div class="rel-row"><div class="rel-row-label">Abertura</div><div class="rel-row-val">${p.dataCriacao}</div></div><div class="rel-row"><div class="rel-row-label">Status</div><div class="rel-row-val">${p.concluido?'Concluído em '+p.dataConclusao:'Em andamento'}</div></div>${renderCreditoRelatorio(p)}${renderReembolsoRelatorio(p)}</div>${totalBox}${marcosBox||""}${gargalosHtml}${tabelaPrazosHtml}<div class="section-head">Linha do tempo</div>${etapasHtml}</div></div>`
+  const statusPillClass=p.cancelado?'cancel':(p.concluido?'ok':'andamento');
+  const statusPillTxt=p.cancelado?'Cancelado':(p.concluido?'Concluído · '+p.dataConclusao:'Em andamento');
+  document.getElementById('relatorio-conteudo').innerHTML=`<div class="rel-card"><div class="rel-top"><div><div class="rel-top-title">${nomeExibicao(p)}</div><div class="rel-top-sub">${p.tipo} · ${p.subtipo}${p.grupo?' · Grupo '+p.grupo:''}</div></div><span class="rel-status-pill ${statusPillClass}">${statusPillTxt}</span></div><div class="rel-body"><div class="section-head">Resumo</div><div class="rel-resumo"><div class="rel-row"><div class="rel-row-label">Consorciado</div><div class="rel-row-val">${nomeExibicao(p)}</div></div><div class="rel-row"><div class="rel-row-label">Tipo / Subtipo</div><div class="rel-row-val">${p.tipo} — ${p.subtipo}</div></div><div class="rel-row"><div class="rel-row-label">Grupo / Cota</div><div class="rel-row-val">${p.grupo||'—'}</div></div><div class="rel-row"><div class="rel-row-label">Abertura</div><div class="rel-row-val">${p.dataCriacao}</div></div><div class="rel-row"><div class="rel-row-label">Status</div><div class="rel-row-val">${p.concluido?'Concluído em '+p.dataConclusao:'Em andamento'}</div></div>${renderCreditoRelatorio(p)}${renderReembolsoRelatorio(p)}</div>${totalBox}${marcosBox||""}${gargalosHtml}${stepperHtml}${tabelaPrazosHtml}<div class="section-head">Linha do tempo detalhada</div>${etapasHtml}</div></div>`
 }
 
 document.querySelectorAll('.modal-backdrop').forEach(b=>{b.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open')})});
