@@ -85,31 +85,31 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .page-sub{font-size:13px;color:var(--text2);margin-top:2px}
 .stats{display:flex;flex-wrap:wrap;gap:2rem;background:transparent;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.125rem 0;margin-bottom:1.5rem}
 .stat-card{padding:0}
-.stat-label{font-size:11.5px;color:var(--text2);margin-bottom:5px;font-weight:600}
-.stat-value{font-size:24px;font-weight:600}
+.stat-label{font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600}
+.stat-value{font-size:32px;font-weight:700}
 .tabs{display:flex;gap:2px;margin-bottom:1.25rem;background:transparent;border:none;border-bottom:1px solid var(--border);padding:0;flex-wrap:wrap;justify-content:flex-start;box-shadow:none;border-radius:0}
 .tab{padding:10px 4px;margin-right:20px;font-size:13px;font-weight:500;border-radius:0;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
 .tab:hover{color:var(--text);border-bottom-color:var(--border-strong)}
 .tab.active{background:transparent;color:var(--blue);border-bottom:2px solid var(--blue);font-weight:600}
 .proc-list-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-bottom:1.25rem}
-.processo-card{background:transparent;border:none;border-left:3px solid var(--border-strong);border-bottom:1px solid var(--border);border-radius:0;padding:.875rem 1.25rem;margin-bottom:0;cursor:pointer;transition:border-color .15s,background .15s;width:100%;box-sizing:border-box}
+.processo-card{background:transparent;border:none;border-left:3px solid var(--border-strong);border-bottom:1px solid var(--border);border-radius:0;padding:1.125rem 1.375rem;margin-bottom:0;cursor:pointer;transition:border-color .15s,background .15s;width:100%;box-sizing:border-box}
 .proc-list-card .processo-card:last-child{border-bottom:none}
 .processo-card:hover{background:var(--surface2);border-left-color:var(--blue)}
 .processo-card.tipo-imovel{border-left-color:var(--blue-border)}
 .processo-card.tipo-veiculo{border-left-color:var(--amber-border)}
 .processo-card.state-done{border-left-color:var(--green)}
 .processo-card.state-cancel{border-left-color:var(--red)}
-.pc-row{display:flex;align-items:center;gap:12px;width:100%}
-.pc-icon{width:32px;height:32px;border-radius:8px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+.pc-row{display:flex;align-items:center;gap:14px;width:100%;min-height:38px}
+.pc-icon{width:38px;height:38px;border-radius:9px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .processo-card.tipo-veiculo .pc-icon{background:var(--amber-light)}
 .pc-main{flex:1;min-width:0}
-.pc-nome{font-size:13.5px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pc-meta{font-size:11.5px;color:var(--text2);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pc-progress{width:84px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden;flex-shrink:0}
+.pc-nome{font-size:14.5px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-meta{font-size:12px;color:var(--text2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pc-progress{width:100px;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;flex-shrink:0}
 .pc-progress-fill{height:100%;background:var(--blue);border-radius:3px;transition:width .3s}
 .processo-card.state-done .pc-progress-fill{background:var(--green)}
 .processo-card.state-cancel .pc-progress-fill{background:var(--red)}
-.pc-pct{font-size:12.5px;font-weight:600;color:var(--text);flex-shrink:0;width:34px;text-align:right}
+.pc-pct{font-size:13.5px;font-weight:700;color:var(--text);flex-shrink:0;width:38px;text-align:right}
 .badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0}
 .badge-imovel{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border)}
 .badge-veiculo{background:var(--amber-light);color:var(--amber);border:1px solid var(--amber-border)}
@@ -132,6 +132,9 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .etapa-block.done::before{background:var(--green);box-shadow:0 0 0 1px var(--green)}
 .etapa-block.current::before{background:var(--blue);box-shadow:0 0 0 1px var(--blue)}
 .etapa-block.alert::before{background:var(--red);box-shadow:0 0 0 1px var(--red)}
+.etapa-block.etapa-collapsed{padding:.75rem 1.125rem;cursor:pointer}
+.etapa-block.etapa-collapsed:hover{border-color:var(--border-strong);background:var(--surface2)}
+.etapa-collapsed-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .etapa-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
 .etapa-nome{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .status-pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
@@ -542,7 +545,7 @@ const ETAPAS_VEICULO=[
   {nome:'Reembolso de taxas',tipo:'reembolso',msg:'Boa tarde, [Nome]!\nO pagamento de R$ [valor], referente ao reembolso de [especificar: gravame / taxa de transferência], está programado para [data], com previsão de crédito na sua conta entre 15h e 17h. \nQualquer dúvida, é só chamar! 😊'}
 ];
 
-let processos=[],pSel=null,modalComEtapaIdx=null,modalComIdx=null,editandoComentario=false,_anoFiltro='todos';
+let processos=[],pSel=null,modalComEtapaIdx=null,modalComIdx=null,editandoComentario=false,_anoFiltro='todos',_etapasAbertas=new Set();
 
 const ETAPAS_QUITACAO_COMPRA=[
   ...ETAPAS_IMOVEL.filter(e=>e.nome!=='Pgto crédito'),
@@ -1242,8 +1245,9 @@ function renderCard(p){
     const dataConcCard=p.dataConclusao||dPgtoCard||'';
     const diasStr=diasCard!==null?(p.concluido?`Concluído em ${dataConcCard?dataConcCard+' · ':''}${diasCard} dias`:`${diasCard}d em andamento`):(p.concluido&&dataConcCard?`Concluído em ${dataConcCard}`:'');
     const etapaStr=p.cancelado?'Cancelado':(!p.concluido&&etapaAtual?etapaAtual.nome:(p.concluido?'Concluído':''));
-    const metaLine=[p.subtipo,p.grupo,diasStr,etapaStr].filter(Boolean).join(' · ');
-    return`<div class="processo-card ${tipoCls} ${stateCls}" onclick="abrirDetalhe('${p.id}')"><div class="pc-row"><div class="pc-icon">${icone}</div><div class="pc-main"><div class="pc-nome">${nomeExibicao(p)}</div><div class="pc-meta">${metaLine}</div></div><div class="pc-progress"><div class="pc-progress-fill" style="width:${pct}%"></div></div><div class="pc-pct">${pct}%</div></div></div>`
+    const metaLine=[p.subtipo,p.grupo,etapaStr].filter(Boolean).join(' · ');
+    const tituloHover=diasStr?diasStr:'';
+    return`<div class="processo-card ${tipoCls} ${stateCls}" onclick="abrirDetalhe('${p.id}')" title="${tituloHover}"><div class="pc-row"><div class="pc-icon">${icone}</div><div class="pc-main"><div class="pc-nome">${nomeExibicao(p)}</div><div class="pc-meta">${metaLine}</div></div><div class="pc-progress"><div class="pc-progress-fill" style="width:${pct}%"></div></div><div class="pc-pct">${pct}%</div></div></div>`
   })();
 }
 
@@ -1252,11 +1256,19 @@ function renderDetalhe(){
   const p=pSel;
   const etapasHtml=p.etapas.map((et,i)=>{
     const st=statusEtapa(et);
+    const isDone=st.cls==='done';
+    const aberta=_etapasAbertas.has(i)||!isDone;
+    const resumoData=et.tipo==='unico'?(et.dataVal||''):(et.tipo==='intervalo'?(et.dataInicio?et.dataInicio+(et.dataFim?' → '+et.dataFim:''):''):'');
+    const customTagMini=et.custom?`<span style="font-size:10px;color:var(--text3);font-weight:400">personalizada</span>`:'';
+    if(!aberta){
+      return `<div class="etapa-block etapa-collapsed ${st.cls}" onclick="toggleEtapa(${i})"><div class="etapa-collapsed-row"><div class="etapa-nome">${et.nome} ${customTagMini}<span class="status-pill ${st.pill}">${st.label}</span></div><div style="display:flex;align-items:center;gap:10px;flex-shrink:0"><span style="font-size:11.5px;color:var(--text3)">${resumoData}</span><i class="ti ti-chevron-down" style="font-size:15px;color:var(--text3)"></i></div></div></div>`;
+    }
     const comsHtml=et.comentarios.map((c,ci)=>`<div class="comment"><div class="comment-meta">${c.data}${c.hora?' · '+c.hora:''} · ${c.resp}</div><div class="comment-text">${c.texto}</div>${!p.concluido?`<div class="comment-acoes"><button class="link-btn" onclick="editarComentario(${i},${ci})"><i class="ti ti-edit" style="font-size:11px"></i> editar</button><button class="link-btn link-btn-red" onclick="removerComentario(${i},${ci})"><i class="ti ti-x" style="font-size:11px"></i> remover</button></div>`:''}</div>`).join('');
-    const customTag=et.custom?`<span style="font-size:10px;color:var(--text3);font-weight:400">personalizada</span>`:'';
+    const customTag=customTagMini;
     const btnCima=i>0?'<button class="link-btn" onclick="moverEtapa('+i+',-1)" title="Mover para cima"><i class="ti ti-arrow-up" style="font-size:12px"></i></button>':'<span style="width:20px"></span>';
     const btnBaixo=i<p.etapas.length-1?'<button class="link-btn" onclick="moverEtapa('+i+',1)" title="Mover para baixo"><i class="ti ti-arrow-down" style="font-size:12px"></i></button>':'<span style="width:20px"></span>';
-    const removeBtn=!p.concluido?'<div style="display:flex;gap:6px;align-items:center">'+btnCima+btnBaixo+'<button class="link-btn" onclick="editarNomeEtapa('+i+')" title="Editar nome"><i class="ti ti-pencil" style="font-size:12px"></i></button><button class="link-btn link-btn-red" onclick="removerEtapaQualquer('+i+')" title="Excluir etapa"><i class="ti ti-trash" style="font-size:12px"></i></button></div>':'';
+    const toggleBtn=isDone?`<button class="link-btn" onclick="toggleEtapa(${i})" title="Recolher"><i class="ti ti-chevron-up" style="font-size:13px"></i></button>`:'';
+    const removeBtn=!p.concluido?'<div style="display:flex;gap:6px;align-items:center">'+toggleBtn+btnCima+btnBaixo+'<button class="link-btn" onclick="editarNomeEtapa('+i+')" title="Editar nome"><i class="ti ti-pencil" style="font-size:12px"></i></button><button class="link-btn link-btn-red" onclick="removerEtapaQualquer('+i+')" title="Excluir etapa"><i class="ti ti-trash" style="font-size:12px"></i></button></div>':toggleBtn;
     return`<div class="etapa-block ${st.cls}${et.custom?' custom':''}"><div class="etapa-top"><div class="etapa-nome">${et.nome} ${customTag}<span class="status-pill ${st.pill}">${st.label}</span></div>${removeBtn}</div>${renderCampos(et,i)}<div class="resp-row"><label>Responsável:</label><select ${p.concluido?'disabled':''} onchange="pSel.etapas[${i}].responsavel=this.value;salvar()">${['Redecon','Cliente','Administradora','Cartório','Banco/Financeira','Prefeitura','Outro'].map(r=>`<option ${et.responsavel===r?'selected':''}>${r}</option>`).join('')}</select></div>${et.comentarios.length?'<div class="comment-list">'+comsHtml+'</div>':''} ${!p.concluido?`<div class="etapa-acoes">
         <button class="add-comment-btn" onclick="abrirComentario(${i})"><i class="ti ti-message-plus" style="font-size:13px"></i> adicionar comentário</button>
         ${'<button class="msg-btn" onclick="abrirMsgEtapa('+i+')"><i class="ti ti-brand-whatsapp" style="font-size:12px"></i> '+(et.msg?'mensagem':'+ criar mensagem')+'</button>'}
@@ -1305,7 +1317,7 @@ function renderDetalhe(){
     <button class="btn btn-secondary btn-sm" onclick="verRelatorio()"><i class="ti ti-file-text"></i> Ver relatório</button>
     ${!p.concluido?`<button class="btn btn-secondary btn-sm" onclick="abrirModalEtapa()"><i class="ti ti-plus"></i> Etapa personalizada</button>`:''}`;
 
-  document.getElementById('detalhe-conteudo').innerHTML=`<div class="detail-card"><div class="detail-top"><div><div class="detail-title">${nomeExibicao(p)}</div><div class="detail-sub">${p.tipo} · ${p.subtipo}${p.grupo?' · '+p.grupo:''} · Aberto em ${p.dataCriacao}</div></div><span class="badge ${p.cancelado?'badge-cancelado':p.concluido?'badge-concluido':p.tipo==='Imóvel'?'badge-imovel':'badge-veiculo'}">${p.cancelado?'🚫 Cancelado':p.concluido?'✅ Concluído':p.tipo==='Imóvel'?'🏠 Imóvel':'🚗 Veículo'}</span></div><div class="detail-body">${p.cancelado?`<div style="background:var(--red-light);border:1px solid var(--red-border);border-radius:var(--radius);padding:12px 14px;margin-bottom:1.25rem"><div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">🚫 Processo cancelado em ${p.dataCancelamento||'—'}${diasCorridos(p.dataCriacao,p.dataCancelamento)!==null?' · '+diasCorridos(p.dataCriacao,p.dataCancelamento)+' dias corridos':''}</div><div style="font-size:13px;color:var(--text)">${p.motivoCancelamento||''}</div></div>`:''}${transferenciaWrap}<div class="section-head">Etapas do processo</div><div class="etapas-timeline">${etapasHtml}</div>${creditoWrap}<div class="bottom-acoes">${p.cancelado?`<button class="btn btn-secondary btn-sm" onclick="reativarProcesso()"><i class="ti ti-refresh"></i> Reativar processo</button>`:(p.concluido?`<button class="btn btn-secondary btn-sm" onclick="reabrirProcesso()"><i class="ti ti-lock-open"></i> Reabrir para edição</button>`:`<button class="btn btn-success btn-sm" onclick="confirmarConclusao()"><i class="ti ti-flag-check"></i> Concluir processo</button><button class="btn btn-danger btn-sm" onclick="abrirModalCancelar()"><i class="ti ti-ban"></i> Cancelar processo</button>`)}<button class="btn btn-danger btn-sm" onclick="excluirProcesso()"><i class="ti ti-trash"></i> Excluir</button></div></div></div>`;
+  document.getElementById('detalhe-conteudo').innerHTML=`<div class="detail-card"><div class="detail-top"><div><div class="detail-title">${nomeExibicao(p)}</div><div class="detail-sub">${p.tipo} · ${p.subtipo}${p.grupo?' · '+p.grupo:''} · Aberto em ${p.dataCriacao}</div></div><span class="badge ${p.cancelado?'badge-cancelado':p.concluido?'badge-concluido':p.tipo==='Imóvel'?'badge-imovel':'badge-veiculo'}">${p.cancelado?'🚫 Cancelado':p.concluido?'✅ Concluído':p.tipo==='Imóvel'?'🏠 Imóvel':'🚗 Veículo'}</span></div><div class="detail-body">${p.cancelado?`<div style="background:var(--red-light);border:1px solid var(--red-border);border-radius:var(--radius);padding:12px 14px;margin-bottom:1.25rem"><div style="font-size:11px;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.04em;margin-bottom:4px">🚫 Processo cancelado em ${p.dataCancelamento||'—'}${diasCorridos(p.dataCriacao,p.dataCancelamento)!==null?' · '+diasCorridos(p.dataCriacao,p.dataCancelamento)+' dias corridos':''}</div><div style="font-size:13px;color:var(--text)">${p.motivoCancelamento||''}</div></div>`:''}${transferenciaWrap}<div class="section-head" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><span>Etapas do processo</span><button class="add-comment-btn" style="text-transform:none;font-size:11px" onclick="toggleTodasEtapas()"><i class="ti ${_etapasAbertas.size>0?'ti-chevrons-up':'ti-chevrons-down'}" style="font-size:12px"></i> ${_etapasAbertas.size>0?'Recolher':'Expandir'} concluídas</button></div><div class="etapas-timeline">${etapasHtml}</div>${creditoWrap}<div class="bottom-acoes">${p.cancelado?`<button class="btn btn-secondary btn-sm" onclick="reativarProcesso()"><i class="ti ti-refresh"></i> Reativar processo</button>`:(p.concluido?`<button class="btn btn-secondary btn-sm" onclick="reabrirProcesso()"><i class="ti ti-lock-open"></i> Reabrir para edição</button>`:`<button class="btn btn-success btn-sm" onclick="confirmarConclusao()"><i class="ti ti-flag-check"></i> Concluir processo</button><button class="btn btn-danger btn-sm" onclick="abrirModalCancelar()"><i class="ti ti-ban"></i> Cancelar processo</button>`)}<button class="btn btn-danger btn-sm" onclick="excluirProcesso()"><i class="ti ti-trash"></i> Excluir</button></div></div></div>`;
 }
 
 function voltarLista(){
@@ -1476,14 +1488,21 @@ function renderEstatisticas(){
   processosFiltrados.forEach(p=>{p.etapas.forEach(et=>{if(!et.alerta)return;const item={proc:nomeExibicao(p),etapa:et.nome,texto:et.alerta.texto};if(et.alerta.tipo==='neg')alertasNeg.push(item);else alertasPos.push(item);});});
   const alertasHtml=(alertasNeg.length||alertasPos.length)?`<div class="estat-section"><div class="estat-section-head">⚠️ Alertas negativos — ${anoLabel}</div><div class="estat-body">${alertasNeg.length?alertasNeg.map(a=>`<div style="padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-size:12px;font-weight:600">${a.proc} — ${a.etapa}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${a.texto}</div></div>`).join(''):'<div class="estat-note">Nenhum alerta negativo.</div>'}</div></div><div class="estat-section"><div class="estat-section-head">✅ Alertas positivos — ${anoLabel}</div><div class="estat-body">${alertasPos.length?alertasPos.map(a=>`<div style="padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-size:12px;font-weight:600">${a.proc} — ${a.etapa}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${a.texto}</div></div>`).join(''):'<div class="estat-note">Nenhum alerta positivo.</div>'}</div></div>`:'';
 document.getElementById('estatisticas-conteudo').innerHTML=`
+    <div class="stats" style="margin-bottom:1.25rem">
+      <div class="stat-card"><div class="stat-label">Total no período</div><div class="stat-value">${processosFiltrados.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Em andamento</div><div class="stat-value">${emAndamento.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Concluídos</div><div class="stat-value" style="color:var(--green)">${concluidos.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Crédito total liberado</div><div class="stat-value" style="font-size:22px;color:var(--green)">${fmtR(totalGeral)}</div></div>
+    </div>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;flex-wrap:wrap">
-      <div style="font-size:14px;font-weight:600;color:var(--text)">Ano de referência:</div>
+      <div style="font-size:13px;font-weight:600;color:var(--text)">Ano de referência:</div>
       <div style="display:flex;gap:6px;flex-wrap:wrap">
         ${['todos',...anosDisponiveis].map(a=>`<button onclick="window._estatAnoSel='${a}';renderEstatisticas()" style="padding:5px 14px;font-size:13px;font-weight:${anoSel===a?'600':'500'};border-radius:20px;border:1px solid ${anoSel===a?'var(--blue-border)':'var(--border)'};background:${anoSel===a?'var(--blue-light)':'var(--surface)'};color:${anoSel===a?'var(--blue)':'var(--text2)'};cursor:pointer;transition:all .15s">${a==='todos'?'Todos':a}</button>`).join('')}
       </div>
     </div>
-    <div class="estat-section">
-      <div class="estat-section-head"><i class="ti ti-home"></i> Médias de prazo — Imóvel · ${concImovel.length} concluído${concImovel.length!==1?'s':''} · ${andImovel.length} em andamento</div>
+    <div class="two-col" style="margin-bottom:1.25rem">
+    <div class="estat-section" style="margin-bottom:0">
+      <div class="estat-section-head"><i class="ti ti-home"></i> Médias — Imóvel · ${concImovel.length} concluído${concImovel.length!==1?'s':''} · ${andImovel.length} em andamento</div>
       <div class="estat-body">
         <div class="estat-grid">
           <div class="estat-card"><div class="estat-card-label">Aprovação</div><div class="estat-card-sub">Aprov − Envio análise</div><div class="estat-card-val blue">${fmt(medAprov)}</div></div>
@@ -1493,11 +1512,11 @@ document.getElementById('estatisticas-conteudo').innerHTML=`
           <div class="estat-card" style="border-color:var(--blue-border);background:var(--blue-light)"><div class="estat-card-label" style="color:var(--blue)">Total médio</div><div class="estat-card-sub">Pgto − Envio análise</div><div class="estat-card-val blue">${fmt(medTotal)}</div></div>
         </div>
         ${compBar(medTotal,[{label:'Com HS',val:medHS||0,color:'var(--blue)'},{label:'Após contrato',val:medApos||0,color:'var(--amber)'},{label:'No RI',val:medRI||0,color:'var(--green)'},{label:'Outras etapas',val:Math.max((medTotal||0)-(medHS||0)-(medApos||0)-(medRI||0),0),color:'var(--border-strong)'}])}
-        ${todosImovel.length===0?'<div class="estat-note">Nenhum processo de imóvel ainda.</div>':'<div class="estat-note">Média calculada com todos os processos que já passaram por cada etapa (concluídos e em andamento)</div>'}
+        ${todosImovel.length===0?'<div class="estat-note">Nenhum processo de imóvel ainda.</div>':'<div class="estat-note">Média com todos os processos que já passaram por cada etapa</div>'}
       </div>
     </div>
-    <div class="estat-section">
-      <div class="estat-section-head"><i class="ti ti-car"></i> Médias de prazo — Veículo · ${concVeiculo.length} concluído${concVeiculo.length!==1?'s':''} · ${andVeiculo.length} em andamento</div>
+    <div class="estat-section" style="margin-bottom:0">
+      <div class="estat-section-head"><i class="ti ti-car"></i> Médias — Veículo · ${concVeiculo.length} concluído${concVeiculo.length!==1?'s':''} · ${andVeiculo.length} em andamento</div>
       <div class="estat-body">
         <div class="estat-grid">
           <div class="estat-card"><div class="estat-card-label">Aprovação</div><div class="estat-card-sub">Aprov − Análise</div><div class="estat-card-val blue">${fmt(medAprovV)}</div></div>
@@ -1505,14 +1524,16 @@ document.getElementById('estatisticas-conteudo').innerHTML=`
           <div class="estat-card" style="border-color:var(--blue-border);background:var(--blue-light)"><div class="estat-card-label" style="color:var(--blue)">Total médio</div><div class="estat-card-sub">Pgto − Análise</div><div class="estat-card-val blue">${fmt(medTotalV)}</div></div>
         </div>
         ${compBar(medTotalV,[{label:'Após aprovação',val:medAposV||0,color:'var(--blue)'},{label:'Outras etapas',val:Math.max((medTotalV||0)-(medAprovV||0)-(medAposV||0),0),color:'var(--border-strong)'}])}
-        ${todosVeiculo.length===0?'<div class="estat-note">Nenhum processo de veículo ainda.</div>':'<div class="estat-note">Média calculada com todos os processos que já passaram por cada etapa (concluídos e em andamento)</div>'}
+        ${todosVeiculo.length===0?'<div class="estat-note">Nenhum processo de veículo ainda.</div>':'<div class="estat-note">Média com todos os processos que já passaram por cada etapa</div>'}
       </div>
+    </div>
     </div>
 
     <div class="estat-section">
       <div class="estat-section-head"><i class="ti ti-coin"></i> Créditos liberados</div>
       <div class="estat-body">
-        <div class="credito-grid">
+        ${compBar(totalGeral,[{label:'Imóvel · '+fmtR(totalImovel),val:totalImovel,color:'var(--blue)'},{label:'Veículo · '+fmtR(totalVeiculo),val:totalVeiculo,color:'var(--amber)'}])}
+        <div class="estat-grid" style="margin-top:1.125rem">
           <div class="estat-card">
             <div class="estat-card-label">Imóvel</div>
             <div class="estat-card-sub">${creditosImovel.length} processo${creditosImovel.length!==1?'s':''}</div>
@@ -1562,7 +1583,13 @@ document.getElementById('estatisticas-conteudo').innerHTML=`
     </div>
     ${gargHtml}${alertasHtml||""}${canceladosHtml||""}`;
 }
-function abrirEtapas(){showView('view-detalhe');renderDetalhe()}
+function abrirEtapas(){_etapasAbertas=new Set();showView('view-detalhe');renderDetalhe()}
+function toggleEtapa(i){if(_etapasAbertas.has(i))_etapasAbertas.delete(i);else _etapasAbertas.add(i);renderDetalhe()}
+function toggleTodasEtapas(){
+  if(_etapasAbertas.size>0){_etapasAbertas=new Set();}
+  else{pSel.etapas.forEach((et,i)=>{if(statusEtapa(et).cls==='done')_etapasAbertas.add(i);});}
+  renderDetalhe();
+}
 function voltarRelatorio(){showView('view-relatorio');renderRelatorio()}
 function voltarDetalhe(){showView('view-relatorio');renderRelatorio()}
 
