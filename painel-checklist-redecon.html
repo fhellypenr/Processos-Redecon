@@ -237,6 +237,16 @@
   .slide .sl-toggle{position:absolute;top:10px;right:10px;z-index:5;border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 10px;font-size:12px;font-weight:600;cursor:pointer;color:#555;box-shadow:0 1px 3px rgba(0,0,0,.12)}
   .slide .sl-toggle:hover{border-color:var(--coral);color:var(--coral)}
   .slide.excl .sl-toggle{background:var(--coral);color:#fff;border-color:var(--coral)}
+  #tipoModalBackdrop{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;align-items:center;justify-content:center}
+  #tipoModalBackdrop.open{display:flex}
+  #tipoModal{background:#fff;border-radius:14px;box-shadow:0 20px 60px rgba(0,0,0,.25);padding:26px 28px;width:360px;max-width:92vw}
+  #tipoModal h3{font-size:16px;margin-bottom:4px}
+  #tipoModal p{font-size:13px;color:#6b6b74;margin-bottom:18px}
+  #tipoModal .tipo-opcoes{display:flex;gap:10px}
+  #tipoModal .tipo-btn{flex:1;border:1px solid var(--line);border-radius:10px;padding:16px 10px;background:#fff;cursor:pointer;text-align:center;font-size:13px;font-weight:600;color:var(--ink);transition:.12s}
+  #tipoModal .tipo-btn .ic{font-size:24px;display:block;margin-bottom:6px}
+  #tipoModal .tipo-btn:hover{border-color:var(--coral2);background:#fff7f5}
+  #tipoModal .tipo-cancelar{margin-top:16px;text-align:center;font-size:12px;color:#9a9aa4;cursor:pointer;text-decoration:underline}
 </style>
 </head>
 <body>
@@ -2133,6 +2143,21 @@ const store = {
   ok(){ try{ localStorage.setItem('_t','1'); localStorage.removeItem('_t'); return true; }catch(e){ return false; } }
 };
 let PROC_ATUAL = null;
+let _tipoModalCallback = null;
+function abrirTipoModal(nome, callback){
+  document.getElementById('tipoModalTitulo').textContent = 'Novo processo — ' + nome;
+  _tipoModalCallback = callback;
+  document.getElementById('tipoModalBackdrop').classList.add('open');
+}
+function tipoModalEscolher(tipo){
+  document.getElementById('tipoModalBackdrop').classList.remove('open');
+  const cb = _tipoModalCallback; _tipoModalCallback = null;
+  if(cb) cb(tipo);
+}
+function tipoModalCancelar(){
+  document.getElementById('tipoModalBackdrop').classList.remove('open');
+  _tipoModalCallback = null;
+}
 function procsAll(){ return store.get('redecon_procs') || {}; }
 function procBadge(){ document.getElementById('proc_badge').textContent = PROC_ATUAL ? ('🗂 '+PROC_ATUAL) : ''; }
 function limparFormSilencioso(){
@@ -2156,14 +2181,17 @@ function procNovo(){
   if(!nome) return;
   const all = procsAll();
   if(all[nome] && !confirm('Já existe um processo com esse nome. Sobrescrever?')) return;
-  if(PROC_ATUAL) procSalvar();
-  limparFormSilencioso();
-  PROC_ATUAL = nome;
-  document.getElementById('p_nome').value = nome;
-  document.getElementById('proc_novo_nome').value='';
-  procSalvar();
-  procBadge(); procRender();
-  abrirTab('pre');
+  abrirTipoModal(nome, function(tipo){
+    if(PROC_ATUAL) procSalvar();
+    limparFormSilencioso();
+    PROC_ATUAL = nome;
+    document.getElementById('p_nome').value = nome;
+    document.getElementById('proc_novo_nome').value='';
+    setChips('modo',[tipo]);
+    procSalvar();
+    procBadge(); procRender();
+    abrirTab(tipo==='veiculo' ? 'perg' : 'pre');
+  });
 }
 function procAbrir(nome){
   const all = procsAll(); if(!all[nome]) return;
@@ -2172,7 +2200,7 @@ function procAbrir(nome){
   PROC_ATUAL = nome;
   aplicarForm(all[nome]);
   procBadge();
-  abrirTab('pre');
+  abrirTab((all[nome].modo==='veiculo') ? 'perg' : 'pre');
 }
 function procSalvar(manual){
   if(!PROC_ATUAL){ if(manual) alert('Crie ou abra um processo na aba 🗂 Processos primeiro.'); return; }
@@ -2727,5 +2755,17 @@ procBadge(); procRender();
     }
   };
 </script>
+
+<div id="tipoModalBackdrop">
+  <div id="tipoModal">
+    <h3 id="tipoModalTitulo">Novo processo</h3>
+    <p>Esse processo é de imóvel ou de veículo?</p>
+    <div class="tipo-opcoes">
+      <div class="tipo-btn" onclick="tipoModalEscolher('imovel')"><span class="ic">🏠</span>Imóvel</div>
+      <div class="tipo-btn" onclick="tipoModalEscolher('veiculo')"><span class="ic">🚗</span>Veículo</div>
+    </div>
+    <div class="tipo-cancelar" onclick="tipoModalCancelar()">cancelar</div>
+  </div>
+</div>
 </body>
 </html>
