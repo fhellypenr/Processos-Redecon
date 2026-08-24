@@ -2540,9 +2540,19 @@ function slideResumoFin(modo, soRenda){
         txtBem += '</p><p class="destaque" contenteditable="true">Esse é o valor mínimo de avaliação exigido. Para liberação de 100% do seu crédito, que hoje é de R$ '+brlFmt(credN)+', o valor mínimo de avaliação do imóvel precisa ser igual ao valor do crédito.';
       }
     } else if((chipVals('v_cond')[0]||'usado')==='novo'){
+      const valbemN = brlParse(valbem);
+      const credN = brlParse(document.getElementById('p_valor').value);
       txtBem = 'O valor do veículo deve ser igual ou superior ao valor do fundo comum do seu consórcio.';
+      if(credN > valbemN){
+        txtBem += '</p><p class="destaque" contenteditable="true">Esse é o valor mínimo exigido. Para liberação de 100% do seu crédito, que hoje é de R$ '+brlFmt(credN)+', o valor do veículo precisa ser igual ao valor do crédito.';
+      }
     } else {
+      const valbemN = brlParse(valbem);
+      const credN = brlParse(document.getElementById('p_valor').value);
       txtBem = 'O valor do veículo deve ser igual ou superior ao saldo devedor da sua cota.';
+      if(credN > valbemN){
+        txtBem += '</p><p class="destaque" contenteditable="true">Esse é o valor mínimo exigido (saldo devedor). Para liberação de 100% do seu crédito, que hoje é de R$ '+brlFmt(credN)+', o valor do veículo precisa ser igual ao valor do crédito.';
+      }
     }
     h+=`<div class="finbox"><h4>Valor mínimo ${bemLabel}</h4><div class="valor" contenteditable="true">R$ ${valbem}</div><p contenteditable="true">${txtBem}</p></div>`;
   }
