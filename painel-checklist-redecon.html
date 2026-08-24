@@ -361,6 +361,7 @@
   <div class="panelbox">
     <h3>Perguntas para WhatsApp</h3>
     <p class="desc">Geradas automaticamente com os dados do processo (nomes e estado civil dos vendedores vêm da pré-análise). Atualize depois de aplicar a análise da matrícula, revise e copie.</p>
+    <p class="desc" style="font-style:italic">Veículo com devedor solidário cadastrado → o Bloco 1 muda sozinho para o formato Cliente + Avalista.</p>
     <div class="neg-actions">
       <button class="btn btn-coral" onclick="gerarPerguntas()">⟳ Atualizar perguntas</button>
     </div>
@@ -2271,8 +2272,55 @@ function procRender(){
 const EC_LABEL_PERG = {solteiro:'solteiro(a)', solteiro_ue:'solteiro(a) em união estável', casado:'casado(a)', divorciado:'divorciado(a)', viuvo:'viúvo(a)'};
 function gerarPerguntas(){
   const modo = chipVals('modo')[0]||'imovel';
+  const temDevSolidario = document.querySelectorAll('#devs .subcard').length > 0;
   /* Bloco 1 — consorciado */
-  let b1 = `*Sobre você* 😊
+  let b1;
+  if(modo==='veiculo' && temDevSolidario){
+    b1 = `*📌 CLIENTE E CÔNJUGE*
+Para darmos andamento no processo, preciso das informações abaixo, por gentileza 😊
+
+1️⃣ *Estado civil* 💍
+Informe seu estado civil:
+▪️ Se for casado(a), informe o regime de bens
+▪️ Se não for casado(a), mas possuir união estável, informe também
+
+2️⃣ *Tipo do bem*
+O veículo será 0km ou usado? 🚗
+
+*📌 AVALISTA E CÔNJUGE*
+Devido à restrição identificada, será necessária a inclusão de avalista para darmos continuidade ao processo.
+
+1️⃣ *Estado civil* 💍
+Informe o estado civil:
+▪️ Se for casado(a), informe o regime de bens
+▪️ Se não for casado(a), mas possuir união estável, informe também
+
+2️⃣ *Restrições*
+O avalista ou cônjuge possuem alguma restrição no SPC ou Serasa?
+
+3️⃣ *Renda principal*
+Qual é a principal fonte de renda do avalista?
+(CLT, autônomo, empresário, aposentado, etc.)
+▪️ Se for empresário(a), informe o regime da empresa (MEI, Simples Nacional, etc.)
+
+4️⃣ *Renda do cônjuge do avalista* 💼
+Qual é a fonte de renda do cônjuge do avalista?
+(Mesmas opções acima)
+
+Com essas informações, iremos montar o checklist completo dos documentos e dados necessários para dar continuidade ao processo. ✔️`;
+    document.getElementById('perg_cliente').textContent = b1;
+    /* Bloco 2 — proprietários / imóvel (segue igual, sem alteração pelo avalista) */
+    let b2v = `*Sobre o veículo e o vendedor* 🚗
+• O veículo está quitado? (não pode ter alienação fiduciária)
+• É recuperado de sinistro?
+• Possui remarcação no chassi ou motor?
+• Não é de leilão?
+• Qual o valor da negociação?
+• O vendedor é pessoa física ou jurídica (loja)?`;
+    document.getElementById('perg_vend').textContent = b2v;
+    return;
+  }
+  b1 = `*Sobre você* 😊
 Para montarmos o seu checklist com exatamente os documentos do seu caso, preciso de algumas informações rápidas:
 
 1️⃣ *Restrição no SPC/Serasa*
