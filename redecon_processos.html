@@ -1433,8 +1433,8 @@ function renderEstatisticas(){
     }
     return parseMoeda(p.credito||'0');
   }
-  const creditosImovel=processos.filter(p=>p.tipo==='Imóvel'&&(p.credito||p.liberacoes?.some(l=>l.valor))).map(creditoTotalProcesso);
-  const creditosVeiculo=processos.filter(p=>p.tipo==='Veículo'&&(p.credito||p.liberacoes?.some(l=>l.valor))).map(creditoTotalProcesso);
+  const creditosImovel=processos.filter(p=>p.tipo==='Imóvel'&&!p.cancelado&&(p.credito||p.liberacoes?.some(l=>l.valor))).map(creditoTotalProcesso);
+  const creditosVeiculo=processos.filter(p=>p.tipo==='Veículo'&&!p.cancelado&&(p.credito||p.liberacoes?.some(l=>l.valor))).map(creditoTotalProcesso);
   const totalImovel=creditosImovel.reduce((a,b)=>a+b,0);
   const totalVeiculo=creditosVeiculo.reduce((a,b)=>a+b,0);
   const totalGeral=totalImovel+totalVeiculo;
