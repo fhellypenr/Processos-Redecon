@@ -2438,7 +2438,8 @@ function atualizarMensagensEnvio(modo){
 
   /* 2) Declaração de saúde -- só PF */
   if(tipoCliente==='pf'){
-    let txt = nomeCliente+' precisa responder as 5 perguntas acima para a confecção da Declaração de Saúde referente ao Seguro Prestamista.\n\n🛡️ O seguro é obrigatório e garante a quitação do saldo devedor em caso de morte ou invalidez do titular.\n\nTaxa: 0,05551% sobre o saldo devedor';
+    const taxaSeguro = modo==='veiculo' ? '0,08881%' : '0,05551%';
+    let txt = nomeCliente+' precisa responder as 5 perguntas acima para a confecção da Declaração de Saúde referente ao Seguro Prestamista.\n\n🛡️ O seguro é obrigatório e garante a quitação do saldo devedor em caso de morte ou invalidez do titular.\n\nTaxa: '+taxaSeguro+' sobre o saldo devedor';
     txt += seguroVal ? (', com valor inicial de R$ '+seguroVal+', reduzindo conforme a amortização do saldo.') : '.';
     msgs.push({titulo:'🩺 Junto às 5 perguntas (Declaração de Saúde)', texto:txt});
   }
