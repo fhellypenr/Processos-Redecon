@@ -1433,8 +1433,8 @@ function renderEstatisticas(){
     }
     return parseMoeda(p.credito||'0');
   }
-  const creditosImovel=processos.filter(p=>p.tipo==='Imóvel'&&!p.cancelado&&(p.credito||p.liberacoes?.some(l=>l.valor))).map(creditoTotalProcesso);
-  const creditosVeiculo=processos.filter(p=>p.tipo==='Veículo'&&!p.cancelado&&(p.credito||p.liberacoes?.some(l=>l.valor))).map(creditoTotalProcesso);
+  const creditosImovel=processos.filter(p=>p.tipo==='Imóvel'&&p.concluido&&!p.cancelado&&(p.credito||p.liberacoes?.some(l=>l.valor))).map(creditoTotalProcesso);
+  const creditosVeiculo=processos.filter(p=>p.tipo==='Veículo'&&p.concluido&&!p.cancelado&&(p.credito||p.liberacoes?.some(l=>l.valor))).map(creditoTotalProcesso);
   const totalImovel=creditosImovel.reduce((a,b)=>a+b,0);
   const totalVeiculo=creditosVeiculo.reduce((a,b)=>a+b,0);
   const totalGeral=totalImovel+totalVeiculo;
@@ -1552,7 +1552,8 @@ document.getElementById('estatisticas-conteudo').innerHTML=`
             <div class="estat-card-val green" style="font-size:16px">${fmtR(totalGeral)}</div>
           </div>
         </div>
-        <div class="estat-note">Apenas processos com crédito liberado preenchido</div>
+        <div class="estat-note">Apenas processos concluídos com crédito liberado preenchido</div>
+        <div class="estat-note" style="margin-top:2px">Processos de Construção/Reforma/Ampliação em andamento com liberação parcial já paga não entram aqui até serem concluídos</div>
       </div>
     </div>
 
