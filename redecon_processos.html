@@ -65,6 +65,7 @@
   --shadow-md:0 4px 12px rgba(0,0,0,.08),0 2px 4px rgba(0,0,0,.04);
   --sidebar-bg:#44444A;
   --chart-teal:#0F6E56; --chart-coral:#D85A30; --chart-purple:#6C5FB0; --chart-blue:#2E6FA8;
+  --current:#2E6FA8; --current-light:#EAF2F9; --current-border:#B9D3E8;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;min-height:100vh}
@@ -125,19 +126,25 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .section-head:first-child{margin-top:0}
 .etapas-timeline{position:relative;padding-left:22px}
 .etapas-timeline::before{content:'';position:absolute;left:5px;top:10px;bottom:10px;width:2px;background:var(--border)}
-.etapa-block{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.125rem;margin-bottom:14px;margin-left:6px;transition:border-color .15s}
+.etapa-block{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.125rem;margin-bottom:14px;margin-left:6px;transition:border-color .15s,opacity .15s}
 .etapa-block::before{content:'';position:absolute;left:-27px;top:19px;width:11px;height:11px;border-radius:50%;background:var(--border-strong);border:2px solid var(--surface);box-shadow:0 0 0 1px var(--border-strong)}
 .etapa-block.done::before{background:var(--green);box-shadow:0 0 0 1px var(--green)}
-.etapa-block.current::before{background:var(--blue);box-shadow:0 0 0 1px var(--blue)}
+.etapa-block.current::before{background:var(--current);box-shadow:0 0 0 1px var(--current)}
 .etapa-block.alert::before{background:var(--red);box-shadow:0 0 0 1px var(--red)}
+.etapa-block.pending{opacity:.65;border-style:dashed}
+.etapa-block.pending:hover{opacity:1}
+.etapa-block.current{border:1px solid var(--current-border);background:var(--current-light);box-shadow:0 0 0 1px var(--current-border)}
+.etapa-block.current .etapa-nome{font-weight:700}
+.etapa-block.alert{border-color:var(--red-border);background:var(--red-light)}
+.etapa-block.done{opacity:.85}
 .etapa-block.etapa-collapsed{padding:.75rem 1.125rem;cursor:pointer}
-.etapa-block.etapa-collapsed:hover{border-color:var(--border-strong);background:var(--surface2)}
+.etapa-block.etapa-collapsed:hover{border-color:var(--border-strong);background:var(--surface2);opacity:1}
 .etapa-collapsed-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .etapa-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;flex-wrap:wrap}
 .etapa-nome{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .status-pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
 .pill-done{background:var(--green-light);color:var(--green);border:1px solid var(--green-border)}
-.pill-current{background:var(--blue-light);color:var(--blue);border:1px solid var(--blue-border)}
+.pill-current{background:var(--current-light);color:var(--current);border:1px solid var(--current-border)}
 .pill-alert{background:var(--red-light);color:var(--red);border:1px solid var(--red-border)}
 .pill-pending{background:var(--bg);color:var(--text3);border:1px solid var(--border)}
 .campos-grid{display:grid;gap:10px;margin-bottom:10px}
