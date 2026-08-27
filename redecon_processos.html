@@ -1005,10 +1005,12 @@ async function processarNovoDaQuery(){
   const tmpl = obterTemplate(tipo, subtipo);
   const hoje = today();
   const etapas = tmpl.map(e => {
+    const isChecklist = e.nome==='Checklist de documentos';
     const et = {
       nome: e.nome, tipo: e.tipo,
-      dataVal: (e.nome==='Checklist de documentos') ? hoje : '',
-      dataInicio:'', dataFim:'', responsavel:'Redecon', comentarios:[], custom:false,
+      dataVal: isChecklist ? hoje : '',
+      dataInicio: isChecklist ? hoje : '',
+      dataFim:'', responsavel:'Redecon', comentarios:[], custom:false,
       msg: e.msgVariantes ? 'VARIANTES' : (e.msg||'')
     };
     if(e.msgVariantes) et.msgVariantes = JSON.parse(JSON.stringify(e.msgVariantes));
