@@ -1405,15 +1405,15 @@ function gerar(){
     if(cond==='divisao'){
       cardsCond.push({t:'Declaração de condomínio (modelo em anexo)', d:'Declaração emitida pelos proprietários, informando que o imóvel que está sendo adquirido não possui débitos de condomínio, com assinatura digital pelo GOV ou certificado digital ICP-Brasil. Deverá conter o número da matrícula do imóvel. Modelo fornecido pela Redecon.'});
     } else {
-      const obsAdm = 'Observação: nos casos da declaração ser emitida pela administradora do condomínio, o documento deve ser em papel timbrado e com assinatura digital do responsável pela empresa. Enviar cópia do contrato social para confirmação do sócio, caso não conste no selo de reconhecimento que foi assinado pelo responsável.';
-      let dDecl = 'Emitida pelo síndico ou administradora responsável, informando que o imóvel que está sendo adquirido não possui débitos de condomínio, com assinatura digital pelo GOV ou certificado digital ICP-Brasil. Deverá conter o número da(s) matrícula(s) do(s) imóvel(is).';
-      if(cond==='adm' || cond==='incerto') dDecl += '\n'+obsAdm;
+      const obsAdm = 'Se emitida pela administradora: papel timbrado + assinatura digital do responsável. Envie também o contrato social, caso o selo de reconhecimento não identifique quem assinou.\n\n📌 Mesmo assinada pelo síndico, confira o timbre do papel — se aparecer uma administradora, ela provavelmente atua no condomínio, e nesse caso peça também o Contrato de prestação de serviço dela.';
+      let dDecl = 'Emitida pelo síndico ou administradora responsável, atestando que o imóvel não possui débitos de condomínio. Assinatura digital pelo GOV ou certificado ICP-Brasil.\n\n⚠️ <strong>Deve constar obrigatoriamente o número da(s) matrícula(s) do(s) imóvel(is).</strong>';
+      dDecl += '\n\n'+obsAdm;
       cardsCond.push({t:'Declaração de quitação de despesas', d:dDecl});
       if(cond==='sindico') cardsCond.push({t:'Ata de eleição do síndico atual', d:'Cópia com autenticação digital (se a declaração for assinada pelo síndico).'});
-      if(cond==='adm') cardsCond.push({t:'Contrato de prestação de serviço da administradora', d:'Cópia simples do contrato da administradora responsável pelo condomínio (se a declaração for assinada pela administradora).'});
+      if(cond==='adm') cardsCond.push({t:'Contrato de prestação de serviço da administradora', d:'Cópia simples do contrato de prestação de serviço. Enviar quando a declaração for assinada pela administradora, ou quando o papel timbrado indicar uma administradora atuando no condomínio — mesmo que quem assinou tenha sido o síndico.'});
       if(cond==='incerto'){
         cardsCond.push({t:'Ata de eleição do síndico atual', d:'Enviar apenas se a declaração for assinada pelo síndico eleito. Cópia com autenticação digital.'});
-        cardsCond.push({t:'Contrato de prestação de serviço da administradora', d:'Enviar apenas se a declaração for assinada pela administradora do condomínio. Cópia simples do contrato de prestação de serviço.'});
+        cardsCond.push({t:'Contrato de prestação de serviço da administradora', d:'Cópia simples do contrato de prestação de serviço. Enviar quando a declaração for assinada pela administradora, ou quando o papel timbrado indicar uma administradora atuando no condomínio — mesmo que quem assinou tenha sido o síndico.'});
       }
     }
     const subCond = cond==='incerto' ? 'Envio do documento correspondente a quem assinar' : '';
