@@ -80,7 +80,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .sidebar-user button{background:none;border:1px solid rgba(255,255,255,.2);color:#D4D4D8;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer;align-self:flex-start}
 .main-area{flex:1;min-width:0}
 .brand-dot{width:8px;height:8px;border-radius:50%;background:#D85A30}
-.container{max-width:1200px;margin:0 auto;padding:2rem 1.5rem}
+.container{max-width:1680px;margin:0 auto;padding:2rem 2rem}
 .view{display:none}.view.active{display:block}
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:12px;flex-wrap:wrap}
 .page-title{font-size:20px;font-weight:600}
@@ -93,15 +93,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .tab{padding:10px 4px;margin-right:20px;font-size:13px;font-weight:500;border-radius:0;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
 .tab:hover{color:var(--text);border-bottom-color:var(--border-strong)}
 .tab.active{background:transparent;color:var(--blue);border-bottom:2px solid var(--blue);font-weight:600}
-.proc-list-card{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-bottom:1.25rem}
-.processo-card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--border-strong);border-radius:12px;padding:1.125rem;cursor:pointer;transition:border-color .15s,box-shadow .15s;width:100%;box-sizing:border-box;height:112px;display:flex;flex-direction:column;justify-content:center}
-.processo-card:hover{box-shadow:var(--shadow-md);border-top-color:var(--blue)}
+.proc-list-card{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,290px));gap:14px;margin-bottom:1.25rem}
+.processo-card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--border-strong);border-radius:12px;padding:1.125rem;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;width:100%;box-sizing:border-box;height:112px;display:flex;flex-direction:column;justify-content:center}
+.processo-card:hover{box-shadow:var(--shadow-md);border-top-color:var(--blue);transform:translateY(-3px)}
+.processo-card:active{transform:translateY(-1px)}
 .processo-card.tipo-imovel{border-top-color:var(--blue-border)}
 .processo-card.tipo-veiculo{border-top-color:var(--amber-border)}
 .processo-card.state-done{border-top-color:var(--green)}
 .processo-card.state-cancel{border-top-color:var(--red)}
 .pc-row{display:flex;align-items:flex-start;gap:12px;width:100%}
-.pc-icon{width:36px;height:36px;border-radius:9px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.pc-icon{width:36px;height:36px;border-radius:9px;background:var(--blue-light);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:transform .15s}
+.processo-card:hover .pc-icon{transform:scale(1.08)}
 .processo-card.tipo-veiculo .pc-icon{background:var(--amber-light)}
 .pc-main{flex:1;min-width:0}
 .pc-nome{font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
@@ -1187,7 +1189,9 @@ function renderListaFiltro(tipo){
   if(tipo==='todos'){
     const imoveis=lista.filter(p=>p.tipo==='Imóvel');
     const veiculos=lista.filter(p=>p.tipo==='Veículo');
-    el.innerHTML='<div class="two-col"><div>'+renderColuna(imoveis,'Imóvel','🏠',false)+'</div><div>'+renderColuna(veiculos,'Veículo','🚗',false)+'</div></div>';
+    let out='<div>'+renderColuna(imoveis,'Imóvel','🏠',false)+'</div>';
+    out+='<div style="margin-top:2rem">'+renderColuna(veiculos,'Veículo','🚗',false)+'</div>';
+    el.innerHTML=out;
     return;
   }
 
@@ -1204,10 +1208,12 @@ function renderListaFiltro(tipo){
     el.innerHTML=html;
     return;
   }
-  // Concluídos em 2 colunas por tipo
+  // Concluídos: Imóvel e Veículo empilhados, largura total
   const concIm=lista.filter(p=>p.tipo==='Imóvel');
   const concVe=lista.filter(p=>p.tipo==='Veículo');
-  el.innerHTML='<div class="two-col"><div>'+renderColuna(concIm,'Imóvel','🏠',true)+'</div><div>'+renderColuna(concVe,'Veículo','🚗',true)+'</div></div>';
+  let outConc='<div>'+renderColuna(concIm,'Imóvel','🏠',true)+'</div>';
+  outConc+='<div style="margin-top:2rem">'+renderColuna(concVe,'Veículo','🚗',true)+'</div>';
+  el.innerHTML=outConc;
 }
 
 function renderCard(p){
