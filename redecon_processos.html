@@ -94,7 +94,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .tab:hover{color:var(--text);border-bottom-color:var(--border-strong)}
 .tab.active{background:transparent;color:var(--blue);border-bottom:2px solid var(--blue);font-weight:600}
 .proc-list-card{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-bottom:1.25rem}
-.processo-card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--border-strong);border-radius:12px;padding:1.125rem;cursor:pointer;transition:border-color .15s,box-shadow .15s;width:100%;box-sizing:border-box}
+.processo-card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--border-strong);border-radius:12px;padding:1.125rem;cursor:pointer;transition:border-color .15s,box-shadow .15s;width:100%;box-sizing:border-box;height:112px;display:flex;flex-direction:column;justify-content:center}
 .processo-card:hover{box-shadow:var(--shadow-md);border-top-color:var(--blue)}
 .processo-card.tipo-imovel{border-top-color:var(--blue-border)}
 .processo-card.tipo-veiculo{border-top-color:var(--amber-border)}
@@ -105,7 +105,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .processo-card.tipo-veiculo .pc-icon{background:var(--amber-light)}
 .pc-main{flex:1;min-width:0}
 .pc-nome{font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pc-meta{font-size:11.5px;color:var(--text2);margin-top:2px;line-height:1.4}
+.pc-meta{font-size:11.5px;color:var(--text2);margin-top:2px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pc-ring{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
 .pc-ring::before{content:'';position:absolute;inset:4px;border-radius:50%;background:var(--surface)}
 .pc-ring span{position:relative;font-size:10.5px;font-weight:700;color:var(--text)}
@@ -1237,7 +1237,8 @@ function renderCard(p){
     const metaTop=[p.subtipo,p.grupo].filter(Boolean).join(' · ');
     const anelCor=p.cancelado?'var(--red)':(p.concluido?'var(--green)':'var(--blue)');
     const anel=`<div class="pc-ring" style="background:conic-gradient(${anelCor} ${pct*3.6}deg, var(--bg) 0deg)"><span>${pct}%</span></div>`;
-    return`<div class="processo-card ${tipoCls} ${stateCls}" onclick="abrirDetalhe('${p.id}')" title="${diasStr}"><div class="pc-row"><div class="pc-icon">${icone}</div><div class="pc-main"><div class="pc-nome">${nomeExibicao(p)}</div><div class="pc-meta">${metaTop}</div><div class="pc-meta" style="margin-top:5px;color:var(--text3)">${etapaStr}</div></div>${anel}</div></div>`
+    const tituloHover=[nomeExibicao(p), metaTop, etapaStr, diasStr].filter(Boolean).join(' — ');
+    return`<div class="processo-card ${tipoCls} ${stateCls}" onclick="abrirDetalhe('${p.id}')" title="${tituloHover}"><div class="pc-row"><div class="pc-icon">${icone}</div><div class="pc-main"><div class="pc-nome">${nomeExibicao(p)}</div><div class="pc-meta">${metaTop}</div><div class="pc-meta" style="margin-top:5px;color:var(--text3)">${etapaStr}</div></div>${anel}</div></div>`
   })();
 }
 
