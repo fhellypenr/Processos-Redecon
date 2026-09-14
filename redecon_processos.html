@@ -1330,18 +1330,15 @@ function renderDetalhe(){
 }
 
 function voltarLista(){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelector('.tab').classList.add('active');
   document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
   const primeiroLink=document.querySelector('.sidebar-link');
   if(primeiroLink) primeiroLink.classList.add('active');
+  _listaFiltroAtual='todos';
   showView('view-lista');renderLista();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function abrirEstatisticas(btn){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  if(btn) btn.classList.add('active');
   document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
   const linkEstat=document.querySelectorAll('.sidebar-link')[1];
   if(linkEstat) linkEstat.classList.add('active');
