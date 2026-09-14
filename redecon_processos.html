@@ -87,6 +87,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .page-sub{font-size:13px;color:var(--text2);margin-top:2px}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin-bottom:1.5rem}
 .stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.125rem 1.25rem;box-shadow:var(--shadow)}
+.stat-card.clickable{cursor:pointer;transition:transform .15s,box-shadow .15s}
+.stat-card.clickable:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
 .stat-label{font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .stat-value{font-size:34px;font-weight:700;line-height:1}
 .tabs{display:flex;gap:2px;margin-bottom:1.25rem;background:transparent;border:none;border-bottom:1px solid var(--border);padding:0;flex-wrap:wrap;justify-content:flex-start;box-shadow:none;border-radius:0}
@@ -341,14 +343,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
       <button class="btn btn-primary" onclick="abrirModalNovo()"><i class="ti ti-plus"></i> Novo processo</button>
     </div>
     <div class="stats" id="stats"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:1.25rem">
-      <div class="tabs" style="margin-bottom:0;flex:1" id="main-tabs">
-        <button class="tab active" onclick="filtrar('todos',this)">Em andamento</button>
-        <button class="tab" onclick="filtrar('Imóvel',this)">Imóvel</button>
-        <button class="tab" onclick="filtrar('Veículo',this)">Veículo</button>
-        <button class="tab" onclick="filtrar('concluido',this)">Concluídos</button>
-        <button class="tab" onclick="filtrar('cancelado',this)">Cancelados</button>
-      </div>
+    <div style="display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:1.25rem">
       <div id="ano-selector" style="display:flex;gap:4px;flex-wrap:wrap"></div>
     </div>
     <div id="lista"></div>
@@ -552,7 +547,7 @@ const ETAPAS_VEICULO=[
   {nome:'Reembolso de taxas',tipo:'reembolso',msg:'Boa tarde, [Nome]!\nO pagamento de R$ [valor], referente ao reembolso de [especificar: gravame / taxa de transferência], está programado para [data], com previsão de crédito na sua conta entre 15h e 17h. \nQualquer dúvida, é só chamar! 😊'}
 ];
 
-let processos=[],pSel=null,modalComEtapaIdx=null,modalComIdx=null,editandoComentario=false,_anoFiltro='todos',_etapasAbertas=new Set();
+let processos=[],pSel=null,modalComEtapaIdx=null,modalComIdx=null,editandoComentario=false,_anoFiltro='todos',_listaFiltroAtual='todos',_etapasAbertas=new Set();
 
 const ETAPAS_QUITACAO_COMPRA=[
   ...ETAPAS_IMOVEL.filter(e=>e.nome!=='Pgto crédito'),
@@ -1050,8 +1045,14 @@ function criarProcesso(){
   processos.push(proc);salvar();fecharModalNovo();renderLista()
 }
 
-function filtrar(tipo,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderListaFiltro(tipo)}
-function renderLista(){renderListaFiltro('todos')}
+function filtrar(tipo){_listaFiltroAtual=tipo;renderListaFiltro(tipo)}
+function irParaLista(tipo){
+  const anoEstat=window._estatAnoSel;
+  if(anoEstat) _anoFiltro=anoEstat;
+  showView('view-lista');
+  filtrar(tipo);
+}
+function renderLista(){renderListaFiltro(_listaFiltroAtual)}
 
 function isEmAnalise(p){ const et=p.etapas.find(e=>e.nome==='Envio p/ análise'||e.nome==='Processo em análise'); return et&&!!et.dataVal; }
 function ultimaInteracao(p){
@@ -1077,10 +1078,7 @@ function renderAnoSelector(){
 }
 function setAnoFiltro(btn,ano){
   _anoFiltro=ano;
-  // Re-aplicar filtro atual
-  const tab=document.querySelector('#main-tabs .tab.active');
-  if(tab) tab.click();
-  else renderLista();
+  filtrar(_listaFiltroAtual);
 }
 function filterByAno(lista){
   if(_anoFiltro==='todos') return lista;
@@ -1104,10 +1102,10 @@ function renderStats(){
   const detAndamento=[detIm,detVe].filter(Boolean).join(' &nbsp;·&nbsp; ');
   renderAnoSelector();
   document.getElementById('stats').innerHTML=`
-    <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value">${t}</div></div>
-    <div class="stat-card"><div class="stat-label">🏠 Imóvel</div><div class="stat-value">${im}</div></div>
-    <div class="stat-card"><div class="stat-label">🚗 Veículo</div><div class="stat-value">${ve}</div></div>
-    <div class="stat-card" style="border-color:var(--blue-border)">
+    <div class="stat-card clickable" onclick="filtrar('total')"><div class="stat-label">Total</div><div class="stat-value">${t}</div></div>
+    <div class="stat-card clickable" onclick="filtrar('Imóvel')"><div class="stat-label">🏠 Imóvel</div><div class="stat-value">${im}</div></div>
+    <div class="stat-card clickable" onclick="filtrar('Veículo')"><div class="stat-label">🚗 Veículo</div><div class="stat-value">${ve}</div></div>
+    <div class="stat-card clickable" style="border-color:var(--blue-border)" onclick="filtrar('todos')">
       <div class="stat-label" style="color:var(--blue)">⏳ Em andamento</div>
       <div class="stat-value" style="color:var(--blue)">${and}</div>
       <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">
@@ -1115,8 +1113,8 @@ function renderStats(){
         ${detVe?'<div style="font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+detVe+'</div>':''}
       </div>
     </div>
-    <div class="stat-card" style="border-color:var(--green-border)"><div class="stat-label" style="color:var(--green)">✅ Concluídos</div><div class="stat-value" style="color:var(--green)">${co}</div><div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Imóvel').length?'<div style="font-size:10px;color:var(--text2)">🏠 '+processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Imóvel').length+' imóvel</div>':''} ${processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Veículo').length?'<div style="font-size:10px;color:var(--text2)">🚗 '+processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Veículo').length+' veículo</div>':''}</div></div>
-    ${cancelados.length?`<div class="stat-card" style="border-color:var(--red-border)"><div class="stat-label" style="color:var(--red)">🚫 Cancelados</div><div class="stat-value" style="color:var(--red)">${cancelados.length}</div><div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${cancelados.filter(p=>p.tipo==='Imóvel').length?'<div style="font-size:10px;color:var(--text2)">🏠 '+cancelados.filter(p=>p.tipo==='Imóvel').length+' imóvel</div>':''}${cancelados.filter(p=>p.tipo==='Veículo').length?'<div style="font-size:10px;color:var(--text2)">🚗 '+cancelados.filter(p=>p.tipo==='Veículo').length+' veículo</div>':''}</div></div>`:''}`
+    <div class="stat-card clickable" style="border-color:var(--green-border)" onclick="filtrar('concluido')"><div class="stat-label" style="color:var(--green)">✅ Concluídos</div><div class="stat-value" style="color:var(--green)">${co}</div><div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Imóvel').length?'<div style="font-size:10px;color:var(--text2)">🏠 '+processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Imóvel').length+' imóvel</div>':''} ${processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Veículo').length?'<div style="font-size:10px;color:var(--text2)">🚗 '+processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Veículo').length+' veículo</div>':''}</div></div>
+    ${cancelados.length?`<div class="stat-card clickable" style="border-color:var(--red-border)" onclick="filtrar('cancelado')"><div class="stat-label" style="color:var(--red)">🚫 Cancelados</div><div class="stat-value" style="color:var(--red)">${cancelados.length}</div><div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${cancelados.filter(p=>p.tipo==='Imóvel').length?'<div style="font-size:10px;color:var(--text2)">🏠 '+cancelados.filter(p=>p.tipo==='Imóvel').length+' imóvel</div>':''}${cancelados.filter(p=>p.tipo==='Veículo').length?'<div style="font-size:10px;color:var(--text2)">🚗 '+cancelados.filter(p=>p.tipo==='Veículo').length+' veículo</div>':''}</div></div>`:''}`
 }
 
 function progresso(p){const t=p.etapas.length,d=p.etapas.filter(et=>et.tipo==='unico'?!!et.dataVal:(!!et.dataInicio&&!!et.dataFim)).length;return Math.round(d/t*100)}
@@ -1170,6 +1168,20 @@ function renderListaFiltro(tipo){
 
   if(tipo==='cancelado'){
     el.innerHTML='<div class="group-label">Cancelados ('+lista.length+')</div><div class="proc-list-card">'+lista.map(p=>renderCard(p)).join('')+'</div>';
+    return;
+  }
+
+  if(tipo==='total'){
+    const todosF=filterByAno(processos);
+    const and=sortByInteracao(todosF.filter(p=>!p.concluido&&!p.cancelado));
+    const conc=sortByInteracao(todosF.filter(p=>p.concluido&&!p.cancelado));
+    const canc=sortByInteracao(todosF.filter(p=>p.cancelado));
+    let htmlT='';
+    if(and.length) htmlT+='<div class="group-label">Em andamento ('+and.length+')</div><div class="proc-list-card">'+and.map(p=>renderCard(p)).join('')+'</div>';
+    if(conc.length) htmlT+='<div class="group-label" style="margin-top:'+(and.length?'1.25rem':'0')+'">Concluídos ('+conc.length+')</div><div class="proc-list-card">'+conc.map(p=>renderCard(p)).join('')+'</div>';
+    if(canc.length) htmlT+='<div class="group-label" style="margin-top:'+(and.length||conc.length?'1.25rem':'0')+'">Cancelados ('+canc.length+')</div><div class="proc-list-card">'+canc.map(p=>renderCard(p)).join('')+'</div>';
+    if(!htmlT) htmlT='<div class="empty"><i class="ti ti-inbox"></i>Nenhum processo encontrado.</div>';
+    el.innerHTML=htmlT;
     return;
   }
 
@@ -1519,12 +1531,12 @@ function renderEstatisticas(){
   const alertasHtml=(alertasNeg.length||alertasPos.length)?`<div class="estat-section"><div class="estat-section-head">⚠️ Alertas negativos — ${anoLabel}</div><div class="estat-body">${alertasNeg.length?alertasNeg.map(a=>`<div style="padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-size:12px;font-weight:600">${a.proc} — ${a.etapa}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${a.texto}</div></div>`).join(''):'<div class="estat-note">Nenhum alerta negativo.</div>'}</div></div><div class="estat-section"><div class="estat-section-head">✅ Alertas positivos — ${anoLabel}</div><div class="estat-body">${alertasPos.length?alertasPos.map(a=>`<div style="padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-size:12px;font-weight:600">${a.proc} — ${a.etapa}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${a.texto}</div></div>`).join(''):'<div class="estat-note">Nenhum alerta positivo.</div>'}</div></div>`:'';
 document.getElementById('estatisticas-conteudo').innerHTML=`
     <div class="stats" style="margin-bottom:1.25rem">
-      <div class="stat-card"><div class="stat-label">Total no período</div><div class="stat-value">${processosFiltrados.length+canceladosFilt.length}</div></div>
-      <div class="stat-card"><div class="stat-label">🏠 Imóvel</div><div class="stat-value">${processosFiltrados.filter(p=>p.tipo==='Imóvel').length}</div></div>
-      <div class="stat-card"><div class="stat-label">🚗 Veículo</div><div class="stat-value">${processosFiltrados.filter(p=>p.tipo==='Veículo').length}</div></div>
-      <div class="stat-card" style="border-color:var(--blue-border)"><div class="stat-label" style="color:var(--blue)">Em andamento</div><div class="stat-value" style="color:var(--blue)">${emAndamento.length}</div></div>
-      <div class="stat-card" style="border-color:var(--green-border)"><div class="stat-label" style="color:var(--green)">Concluídos</div><div class="stat-value" style="color:var(--green)">${concluidos.length}</div></div>
-      ${canceladosFilt.length?`<div class="stat-card" style="border-color:var(--red-border)"><div class="stat-label" style="color:var(--red)">Cancelados</div><div class="stat-value" style="color:var(--red)">${canceladosFilt.length}</div></div>`:''}
+      <div class="stat-card clickable" onclick="irParaLista('total')"><div class="stat-label">Total no período</div><div class="stat-value">${processosFiltrados.length+canceladosFilt.length}</div></div>
+      <div class="stat-card clickable" onclick="irParaLista('Imóvel')"><div class="stat-label">🏠 Imóvel</div><div class="stat-value">${processosFiltrados.filter(p=>p.tipo==='Imóvel').length}</div></div>
+      <div class="stat-card clickable" onclick="irParaLista('Veículo')"><div class="stat-label">🚗 Veículo</div><div class="stat-value">${processosFiltrados.filter(p=>p.tipo==='Veículo').length}</div></div>
+      <div class="stat-card clickable" style="border-color:var(--blue-border)" onclick="irParaLista('todos')"><div class="stat-label" style="color:var(--blue)">Em andamento</div><div class="stat-value" style="color:var(--blue)">${emAndamento.length}</div></div>
+      <div class="stat-card clickable" style="border-color:var(--green-border)" onclick="irParaLista('concluido')"><div class="stat-label" style="color:var(--green)">Concluídos</div><div class="stat-value" style="color:var(--green)">${concluidos.length}</div></div>
+      ${canceladosFilt.length?`<div class="stat-card clickable" style="border-color:var(--red-border)" onclick="irParaLista('cancelado')"><div class="stat-label" style="color:var(--red)">Cancelados</div><div class="stat-value" style="color:var(--red)">${canceladosFilt.length}</div></div>`:''}
       <div class="stat-card" style="border-color:var(--green-border)"><div class="stat-label" style="color:var(--green)">Crédito total liberado</div><div class="stat-value" style="font-size:22px;color:var(--green)">${fmtR(totalGeral)}</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;flex-wrap:wrap">
