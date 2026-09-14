@@ -1395,10 +1395,9 @@ function renderEstatisticas(){
   const andImovel=emAndamento.filter(p=>p.tipo==='Imóvel');
   const concVeiculo=concluidos.filter(p=>p.tipo==='Veículo');
   const andVeiculo=emAndamento.filter(p=>p.tipo==='Veículo');
-  const todosImovel=[...concImovel,...andImovel];
-  const todosVeiculo=[...concVeiculo,...andVeiculo];
-  const prazosImovel=todosImovel.map(getPrazosImovel);
-  const prazosVeiculo=todosVeiculo.map(getPrazosVeiculo);
+  // Médias de prazo consideram SOMENTE processos concluídos (decisão do usuário: em andamento não entra na média).
+  const prazosImovel=concImovel.map(getPrazosImovel);
+  const prazosVeiculo=concVeiculo.map(getPrazosVeiculo);
 
   const medAprov=mediaValores(prazosImovel.map(p=>p.aprovacao));
   const medHS=mediaValores(prazosImovel.map(p=>p.comHS));
@@ -1529,14 +1528,14 @@ document.getElementById('estatisticas-conteudo').innerHTML=`
         ${linhaPrazo('Após contrato','Entrada RI − Assinatura',medApos,medTotal,'var(--chart-purple)')}
         ${linhaPrazo('No RI','Saída − Entrada RI',medRI,medTotal,'var(--chart-blue)')}
         ${linhaTotal('Total médio','Pgto − Envio análise',medTotal)}
-        ${todosImovel.length===0?'<div class="estat-note" style="text-align:left;margin-top:2px">Nenhum processo de imóvel ainda.</div>':''}
+        ${concImovel.length===0?'<div class="estat-note" style="text-align:left;margin-top:2px">Nenhum processo de imóvel concluído ainda'+(andImovel.length?' ('+andImovel.length+' em andamento).':'.')+'</div>':''}
 
         <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 2px;padding-top:14px;border-top:1px solid var(--border)">🚗 Veículo · ${concVeiculo.length} concluído${concVeiculo.length!==1?'s':''} · ${andVeiculo.length} em andamento</div>
         ${linhaPrazo('Aprovação','Aprov − Análise',medAprovV,medTotalV,'var(--chart-teal)')}
         ${linhaPrazo('Após aprovação','Assinatura − Aprovação',medAposV,medTotalV,'var(--chart-coral)')}
         ${linhaTotal('Total médio','Pgto − Análise',medTotalV)}
-        ${todosVeiculo.length===0?'<div class="estat-note" style="text-align:left;margin-top:2px">Nenhum processo de veículo ainda.</div>':''}
-        <div class="estat-note">Médias com todos os processos que já passaram por cada etapa (concluídos e em andamento)</div>
+        ${concVeiculo.length===0?'<div class="estat-note" style="text-align:left;margin-top:2px">Nenhum processo de veículo concluído ainda'+(andVeiculo.length?' ('+andVeiculo.length+' em andamento).':'.')+'</div>':''}
+        <div class="estat-note">Médias calculadas somente com processos concluídos (processos em andamento não entram no cálculo)</div>
       </div>
     </div>
 
