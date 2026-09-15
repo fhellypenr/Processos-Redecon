@@ -85,18 +85,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:12px;flex-wrap:wrap}
 .page-title{font-size:20px;font-weight:600}
 .page-sub{font-size:13px;color:var(--text2);margin-top:2px}
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:14px;margin-bottom:1.5rem}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.125rem 1.25rem;box-shadow:var(--shadow)}
-.stat-card.clickable{cursor:pointer;transition:transform .15s,box-shadow .15s}
-.stat-card.clickable:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
-.stat-label{font-size:12px;color:var(--text2);margin-bottom:8px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stat-value{font-size:34px;font-weight:700;line-height:1}
+.stats{display:flex;flex-wrap:wrap;gap:2rem;background:transparent;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.125rem 0;margin-bottom:1.5rem}
+.stat-card{padding:0}
+.stat-label{font-size:12px;color:var(--text2);margin-bottom:6px;font-weight:600}
+.stat-value{font-size:32px;font-weight:700}
 .tabs{display:flex;gap:2px;margin-bottom:1.25rem;background:transparent;border:none;border-bottom:1px solid var(--border);padding:0;flex-wrap:wrap;justify-content:flex-start;box-shadow:none;border-radius:0}
 .tab{padding:10px 4px;margin-right:20px;font-size:13px;font-weight:500;border-radius:0;border:none;border-bottom:2px solid transparent;background:transparent;color:var(--text2);cursor:pointer;transition:all .15s}
 .tab:hover{color:var(--text);border-bottom-color:var(--border-strong)}
 .tab.active{background:transparent;color:var(--blue);border-bottom:2px solid var(--blue);font-weight:600}
-.proc-list-card{display:flex;flex-wrap:wrap;gap:14px;margin-bottom:1.25rem}
-.processo-card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--border-strong);border-radius:12px;padding:1.125rem;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;box-sizing:border-box;height:112px;display:flex;flex-direction:column;justify-content:center;flex:0 0 auto;min-width:250px;max-width:440px}
+.proc-list-card{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,290px));gap:14px;margin-bottom:1.25rem}
+.processo-card{background:var(--surface);border:1px solid var(--border);border-top:3px solid var(--border-strong);border-radius:12px;padding:1.125rem;cursor:pointer;transition:transform .15s,box-shadow .15s,border-color .15s;width:100%;box-sizing:border-box;height:112px;display:flex;flex-direction:column;justify-content:center}
 .processo-card:hover{box-shadow:var(--shadow-md);border-top-color:var(--blue);transform:translateY(-3px)}
 .processo-card:active{transform:translateY(-1px)}
 .processo-card.tipo-imovel{border-top-color:var(--blue-border)}
@@ -108,7 +106,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
 .processo-card:hover .pc-icon{transform:scale(1.08)}
 .processo-card.tipo-veiculo .pc-icon{background:var(--amber-light)}
 .pc-main{flex:1;min-width:0}
-.pc-nome{font-size:14px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.pc-nome{font-size:14px;font-weight:600;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pc-meta{font-size:11.5px;color:var(--text2);margin-top:2px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pc-ring{width:40px;height:40px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;position:relative}
 .pc-ring::before{content:'';position:absolute;inset:4px;border-radius:50%;background:var(--surface)}
@@ -343,7 +341,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);font-
       <button class="btn btn-primary" onclick="abrirModalNovo()"><i class="ti ti-plus"></i> Novo processo</button>
     </div>
     <div class="stats" id="stats"></div>
-    <div style="display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:1.25rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:1.25rem">
+      <div class="tabs" style="margin-bottom:0;flex:1" id="main-tabs">
+        <button class="tab active" onclick="filtrar('todos',this)">Em andamento</button>
+        <button class="tab" onclick="filtrar('Imóvel',this)">Imóvel</button>
+        <button class="tab" onclick="filtrar('Veículo',this)">Veículo</button>
+        <button class="tab" onclick="filtrar('concluido',this)">Concluídos</button>
+        <button class="tab" onclick="filtrar('cancelado',this)">Cancelados</button>
+      </div>
       <div id="ano-selector" style="display:flex;gap:4px;flex-wrap:wrap"></div>
     </div>
     <div id="lista"></div>
@@ -541,13 +546,14 @@ const ETAPAS_VEICULO=[
   {nome:'Vistoria digital realizada',tipo:'unico',msg:''},
   {nome:'Comitê de aprovação',tipo:'unico',msg:'Bom dia, [Nome]! Tudo bem? \nO processo foi encaminhado ao comitê de aprovação. 🙌🏻\nAgora é aguardar o retorno para confirmar a aprovação e seguirmos com as próximas etapas. \nQualquer novidade, te avisamos!'},
   {nome:'Aprovação',tipo:'unico',msg:'Bom dia, [Nome]!\nO processo foi aprovado! 🎉\nO contrato está sendo confeccionado. Em breve encaminharemos todas as informações para a conclusão do processo.'},
-  {nome:'Assinatura + Docs',tipo:'unico',msg:'Olá, [Nome]! Tudo bem?\nPara concluirmos o processo, precisamos de algumas providências:\n\n📌 ETAPA 1 — ASSINATURA DIGITAL\n[Nome do consorciado] receberá via D4Sign (WhatsApp):\n2 links: Contrato de Alienação e Termo de Opção\n[Nome do vendedor] receberá via D4Sign (WhatsApp):\n1 link: Termo de Opção\nTodos devem acessar e assinar os links recebidos. 📷\nEnvie fotos legíveis dos documentos (CNH preferencialmente), centralizadas e sem objetos ao fundo.\n\n📌 ETAPA 2 — TAXAS\nO boleto do gravame e da vistoria foi enviado por e-mail.\nSegue o código PIX para facilitar o pagamento. ⚠️\nO pagamento é obrigatório para dar continuidade ao processo.\n\n📌 ETAPA 3 — DOCUMENTO DO VEÍCULO\nEnviar:\nATPV com ambas as assinaturas reconhecidas por autenticidade (ou ATPV com assinatura digital em PDF)\nProcuração desmaterializada (quando houver)\n\n📌 ETAPA 4 — PAGAMENTO\nO pagamento ao vendedor ocorre em até 48 horas úteis após a inclusão do gravame e o comunicado de venda ou transferência no DETRAN. ⚠️\nVeículos com multas, RECALL ou restrições: somente após transferência concluída.\nAguarde nossa autorização por e-mail para concluir a vistoria e transferência.'},
+  {nome:'Assinatura + Docs',tipo:'intervalo',msg:'Olá, [Nome]! Tudo bem?\nPara concluirmos o processo, precisamos de algumas providências:\n\n📌 ETAPA 1 — ASSINATURA DIGITAL\n[Nome do consorciado] receberá via D4Sign (WhatsApp):\n2 links: Contrato de Alienação e Termo de Opção\n[Nome do vendedor] receberá via D4Sign (WhatsApp):\n1 link: Termo de Opção\nTodos devem acessar e assinar os links recebidos. 📷\nEnvie fotos legíveis dos documentos (CNH preferencialmente), centralizadas e sem objetos ao fundo.\n\n📌 ETAPA 2 — TAXAS\nO boleto do gravame e da vistoria foi enviado por e-mail.\nSegue o código PIX para facilitar o pagamento. ⚠️\nO pagamento é obrigatório para dar continuidade ao processo.\n\n📌 ETAPA 3 — DOCUMENTO DO VEÍCULO\nEnviar:\nATPV com ambas as assinaturas reconhecidas por autenticidade (ou ATPV com assinatura digital em PDF)\nProcuração desmaterializada (quando houver)\n\n📌 ETAPA 4 — PAGAMENTO\nO pagamento ao vendedor ocorre em até 48 horas úteis após a inclusão do gravame e o comunicado de venda ou transferência no DETRAN. ⚠️\nVeículos com multas, RECALL ou restrições: somente após transferência concluída.\nAguarde nossa autorização por e-mail para concluir a vistoria e transferência.'},
+  {nome:'Envio docs p/ inclusão gravame',tipo:'unico',msg:'Olá, [Nome]!\nOs documentos foram enviados para a administradora para inclusão do gravame no veículo. ✅\nAguardamos a confirmação da inclusão.'},
   {nome:'Inclusão gravame',tipo:'unico',msg:'Olá, [Nome]! O gravame foi incluído no veículo. ✅\nO veículo está liberado para vistoria e para os procedimentos de transferência ou emplacamento.\nQuanto ao pagamento: o comunicado de venda já foi realizado. Agora é aguardar a programação — assim que for liberado, te avisamos!'},
   {nome:'Pgto crédito',tipo:'unico',msg:'Boa tarde, [Nome]! Tudo certo?\nO pagamento de R$ [valor], referente à compra do [veículo], está programado para [data], com previsão de crédito na conta do vendedor entre 15h e 17h.\nPor favor, nos confirme assim que o valor for creditado ou caso note qualquer divergência.\nA Redecon segue à disposição para o que precisar. 🙌🏻'},
   {nome:'Reembolso de taxas',tipo:'reembolso',msg:'Boa tarde, [Nome]!\nO pagamento de R$ [valor], referente ao reembolso de [especificar: gravame / taxa de transferência], está programado para [data], com previsão de crédito na sua conta entre 15h e 17h. \nQualquer dúvida, é só chamar! 😊'}
 ];
 
-let processos=[],pSel=null,modalComEtapaIdx=null,modalComIdx=null,editandoComentario=false,_anoFiltro='todos',_listaFiltroAtual='todos',_etapasAbertas=new Set();
+let processos=[],pSel=null,modalComEtapaIdx=null,modalComIdx=null,editandoComentario=false,_anoFiltro='todos',_etapasAbertas=new Set();
 
 const ETAPAS_QUITACAO_COMPRA=[
   ...ETAPAS_IMOVEL.filter(e=>e.nome!=='Pgto crédito'),
@@ -1045,14 +1051,8 @@ function criarProcesso(){
   processos.push(proc);salvar();fecharModalNovo();renderLista()
 }
 
-function filtrar(tipo){_listaFiltroAtual=tipo;renderListaFiltro(tipo)}
-function irParaLista(tipo){
-  const anoEstat=window._estatAnoSel;
-  if(anoEstat) _anoFiltro=anoEstat;
-  showView('view-lista');
-  filtrar(tipo);
-}
-function renderLista(){renderListaFiltro(_listaFiltroAtual)}
+function filtrar(tipo,btn){document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');renderListaFiltro(tipo)}
+function renderLista(){renderListaFiltro('todos')}
 
 function isEmAnalise(p){ const et=p.etapas.find(e=>e.nome==='Envio p/ análise'||e.nome==='Processo em análise'); return et&&!!et.dataVal; }
 function ultimaInteracao(p){
@@ -1078,7 +1078,10 @@ function renderAnoSelector(){
 }
 function setAnoFiltro(btn,ano){
   _anoFiltro=ano;
-  filtrar(_listaFiltroAtual);
+  // Re-aplicar filtro atual
+  const tab=document.querySelector('#main-tabs .tab.active');
+  if(tab) tab.click();
+  else renderLista();
 }
 function filterByAno(lista){
   if(_anoFiltro==='todos') return lista;
@@ -1102,10 +1105,10 @@ function renderStats(){
   const detAndamento=[detIm,detVe].filter(Boolean).join(' &nbsp;·&nbsp; ');
   renderAnoSelector();
   document.getElementById('stats').innerHTML=`
-    <div class="stat-card clickable" onclick="filtrar('total')"><div class="stat-label">Total</div><div class="stat-value">${t}</div></div>
-    <div class="stat-card clickable" onclick="filtrar('Imóvel')"><div class="stat-label">🏠 Imóvel</div><div class="stat-value">${im}</div></div>
-    <div class="stat-card clickable" onclick="filtrar('Veículo')"><div class="stat-label">🚗 Veículo</div><div class="stat-value">${ve}</div></div>
-    <div class="stat-card clickable" style="border-color:var(--blue-border)" onclick="filtrar('todos')">
+    <div class="stat-card"><div class="stat-label">Total</div><div class="stat-value">${t}</div></div>
+    <div class="stat-card"><div class="stat-label">🏠 Imóvel</div><div class="stat-value">${im}</div></div>
+    <div class="stat-card"><div class="stat-label">🚗 Veículo</div><div class="stat-value">${ve}</div></div>
+    <div class="stat-card" style="border-color:var(--blue-border)">
       <div class="stat-label" style="color:var(--blue)">⏳ Em andamento</div>
       <div class="stat-value" style="color:var(--blue)">${and}</div>
       <div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">
@@ -1113,8 +1116,8 @@ function renderStats(){
         ${detVe?'<div style="font-size:10px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+detVe+'</div>':''}
       </div>
     </div>
-    <div class="stat-card clickable" style="border-color:var(--green-border)" onclick="filtrar('concluido')"><div class="stat-label" style="color:var(--green)">✅ Concluídos</div><div class="stat-value" style="color:var(--green)">${co}</div><div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Imóvel').length?'<div style="font-size:10px;color:var(--text2)">🏠 '+processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Imóvel').length+' imóvel</div>':''} ${processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Veículo').length?'<div style="font-size:10px;color:var(--text2)">🚗 '+processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Veículo').length+' veículo</div>':''}</div></div>
-    ${cancelados.length?`<div class="stat-card clickable" style="border-color:var(--red-border)" onclick="filtrar('cancelado')"><div class="stat-label" style="color:var(--red)">🚫 Cancelados</div><div class="stat-value" style="color:var(--red)">${cancelados.length}</div><div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${cancelados.filter(p=>p.tipo==='Imóvel').length?'<div style="font-size:10px;color:var(--text2)">🏠 '+cancelados.filter(p=>p.tipo==='Imóvel').length+' imóvel</div>':''}${cancelados.filter(p=>p.tipo==='Veículo').length?'<div style="font-size:10px;color:var(--text2)">🚗 '+cancelados.filter(p=>p.tipo==='Veículo').length+' veículo</div>':''}</div></div>`:''}`
+    <div class="stat-card" style="border-color:var(--green-border)"><div class="stat-label" style="color:var(--green)">✅ Concluídos</div><div class="stat-value" style="color:var(--green)">${co}</div><div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Imóvel').length?'<div style="font-size:10px;color:var(--text2)">🏠 '+processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Imóvel').length+' imóvel</div>':''} ${processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Veículo').length?'<div style="font-size:10px;color:var(--text2)">🚗 '+processos.filter(p=>p.concluido&&!p.cancelado&&p.tipo==='Veículo').length+' veículo</div>':''}</div></div>
+    ${cancelados.length?`<div class="stat-card" style="border-color:var(--red-border)"><div class="stat-label" style="color:var(--red)">🚫 Cancelados</div><div class="stat-value" style="color:var(--red)">${cancelados.length}</div><div style="margin-top:6px;display:flex;flex-direction:column;gap:3px">${cancelados.filter(p=>p.tipo==='Imóvel').length?'<div style="font-size:10px;color:var(--text2)">🏠 '+cancelados.filter(p=>p.tipo==='Imóvel').length+' imóvel</div>':''}${cancelados.filter(p=>p.tipo==='Veículo').length?'<div style="font-size:10px;color:var(--text2)">🚗 '+cancelados.filter(p=>p.tipo==='Veículo').length+' veículo</div>':''}</div></div>`:''}`
 }
 
 function progresso(p){const t=p.etapas.length,d=p.etapas.filter(et=>et.tipo==='unico'?!!et.dataVal:(!!et.dataInicio&&!!et.dataFim)).length;return Math.round(d/t*100)}
@@ -1168,20 +1171,6 @@ function renderListaFiltro(tipo){
 
   if(tipo==='cancelado'){
     el.innerHTML='<div class="group-label">Cancelados ('+lista.length+')</div><div class="proc-list-card">'+lista.map(p=>renderCard(p)).join('')+'</div>';
-    return;
-  }
-
-  if(tipo==='total'){
-    const todosF=filterByAno(processos);
-    const and=sortByInteracao(todosF.filter(p=>!p.concluido&&!p.cancelado));
-    const conc=sortByInteracao(todosF.filter(p=>p.concluido&&!p.cancelado));
-    const canc=sortByInteracao(todosF.filter(p=>p.cancelado));
-    let htmlT='';
-    if(and.length) htmlT+='<div class="group-label">Em andamento ('+and.length+')</div><div class="proc-list-card">'+and.map(p=>renderCard(p)).join('')+'</div>';
-    if(conc.length) htmlT+='<div class="group-label" style="margin-top:'+(and.length?'1.25rem':'0')+'">Concluídos ('+conc.length+')</div><div class="proc-list-card">'+conc.map(p=>renderCard(p)).join('')+'</div>';
-    if(canc.length) htmlT+='<div class="group-label" style="margin-top:'+(and.length||conc.length?'1.25rem':'0')+'">Cancelados ('+canc.length+')</div><div class="proc-list-card">'+canc.map(p=>renderCard(p)).join('')+'</div>';
-    if(!htmlT) htmlT='<div class="empty"><i class="ti ti-inbox"></i>Nenhum processo encontrado.</div>';
-    el.innerHTML=htmlT;
     return;
   }
 
@@ -1330,15 +1319,18 @@ function renderDetalhe(){
 }
 
 function voltarLista(){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelector('.tab').classList.add('active');
   document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
   const primeiroLink=document.querySelector('.sidebar-link');
   if(primeiroLink) primeiroLink.classList.add('active');
-  _listaFiltroAtual='todos';
   showView('view-lista');renderLista();
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
 function abrirEstatisticas(btn){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  if(btn) btn.classList.add('active');
   document.querySelectorAll('.sidebar-link').forEach(l=>l.classList.remove('active'));
   const linkEstat=document.querySelectorAll('.sidebar-link')[1];
   if(linkEstat) linkEstat.classList.add('active');
@@ -1390,14 +1382,23 @@ function renderEstatisticas(){
   }
   function getPrazosVeiculo(p){
     const etAnalise=p.etapas.find(et=>et.nome==='Processo em análise');
+    const etVistEnvio=p.etapas.find(et=>et.nome==='Envio link vistoria digital');
+    const etVistFeita=p.etapas.find(et=>et.nome==='Vistoria digital realizada');
     const etAprov=p.etapas.find(et=>et.nome==='Aprovação');
     const etAssin=p.etapas.find(et=>et.nome==='Assinatura + Docs');
+    const etEnvioGravame=p.etapas.find(et=>et.nome==='Envio docs p/ inclusão gravame');
     const etPgto=p.etapas.find(et=>et.nome==='Pagamento compra e venda')||p.etapas.find(et=>et.nome==='Pgto crédito');
     const dAnalise=etAnalise?etAnalise.dataVal:'';
+    const dVistEnvio=etVistEnvio?etVistEnvio.dataVal:'';
+    const dVistFeita=etVistFeita?etVistFeita.dataVal:'';
     const dAprov=etAprov?etAprov.dataVal:'';
-    const dAssin=etAssin?etAssin.dataVal:'';
+    const dAssinInicio=etAssin?(etAssin.dataInicio||etAssin.dataVal):'';
+    const dAssin=etAssin?(etAssin.dataFim||etAssin.dataVal):'';
+    const dEnvioGravame=etEnvioGravame?etEnvioGravame.dataVal:'';
     const dPgto=etPgto?etPgto.dataVal:'';
-    return{aprovacao:diasCorridos(dAnalise,dAprov),aposAprov:diasCorridos(dAprov,dAssin),total:diasCorridos(dAnalise,dPgto)};
+    const trechosHS=[diasCorridos(dAnalise,dVistEnvio),diasCorridos(dVistFeita,dAprov),diasCorridos(dAprov,dAssinInicio),diasCorridos(dEnvioGravame,dPgto)];
+    const comHS=trechosHS.every(v=>v!==null)?trechosHS.reduce((a,b)=>a+b,0):null;
+    return{aprovacao:diasCorridos(dAnalise,dAprov),aposAprov:diasCorridos(dAprov,dAssin),comHS,total:diasCorridos(dAnalise,dPgto)};
   }
 
   const concImovel=concluidos.filter(p=>p.tipo==='Imóvel');
@@ -1416,32 +1417,23 @@ function renderEstatisticas(){
   const medTotal=mediaValores(prazosImovel.map(p=>p.total));
   const medAprovV=mediaValores(prazosVeiculo.map(p=>p.aprovacao));
   const medAposV=mediaValores(prazosVeiculo.map(p=>p.aposAprov));
+  const medHSV=mediaValores(prazosVeiculo.map(p=>p.comHS));
   const medTotalV=mediaValores(prazosVeiculo.map(p=>p.total));
 
   function fmt(v){return v!==null?'<span style="font-size:18px;font-weight:700">'+v+'</span><span style="font-size:11px;font-weight:400;margin-left:2px">dias</span>':'—'}
   function fmtR(v){if(!v)return'R$ 0,00';return'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2})}
   function linhaPrazo(nome,sub,val,max,cor){
-    if(val===null)return`<div style="display:flex;align-items:center;gap:12px"><div style="width:130px;flex-shrink:0"><div style="font-size:13px;font-weight:600;color:var(--text)">${nome}</div><div style="font-size:10.5px;color:var(--text3)">${sub}</div></div><div style="flex:1;font-size:12px;color:var(--text3)">—</div></div>`;
+    if(val===null)return`<div style="display:flex;align-items:center;gap:12px;padding:8px 0"><div style="width:8px;height:8px;border-radius:2px;background:var(--border-strong);flex-shrink:0"></div><div style="width:140px;flex-shrink:0"><div style="font-size:12.5px;font-weight:600;color:var(--text)">${nome}</div><div style="font-size:10.5px;color:var(--text3)">${sub}</div></div><div style="flex:1;font-size:12px;color:var(--text3)">—</div></div>`;
     const pct=max?Math.max(4,Math.min(100,(val/max*100))):0;
-    return`<div style="display:flex;align-items:center;gap:12px">
-      <div style="width:130px;flex-shrink:0"><div style="font-size:13px;font-weight:600;color:var(--text)">${nome}</div><div style="font-size:10.5px;color:var(--text3)">${sub}</div></div>
-      <div style="flex:1;height:12px;background:var(--bg);border-radius:6px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${cor};border-radius:6px"></div></div>
-      <div style="width:44px;text-align:right;font-size:14px;font-weight:700;color:${cor}">${val}d</div>
+    return`<div style="display:flex;align-items:center;gap:12px;padding:8px 0">
+      <div style="width:8px;height:8px;border-radius:2px;background:${cor};flex-shrink:0"></div>
+      <div style="width:140px;flex-shrink:0"><div style="font-size:12.5px;font-weight:600;color:var(--text)">${nome}</div><div style="font-size:10.5px;color:var(--text3)">${sub}</div></div>
+      <div style="flex:1;height:9px;background:var(--bg);border-radius:5px;overflow:hidden"><div style="width:${pct}%;height:100%;background:${cor};border-radius:5px"></div></div>
+      <div style="width:56px;text-align:right;font-size:13.5px;font-weight:700;color:${cor}">${val}d</div>
     </div>`;
   }
-  function painelPrazos(icone,titulo,sub,linhasHtml,totalVal,totalSub){
-    return`<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:14px">
-      <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:600;color:var(--text)">${icone} ${titulo} <span style="font-weight:400;color:var(--text3)">· ${sub}</span></div>
-      <div style="padding:18px 16px;display:flex;gap:24px;align-items:center;flex-wrap:wrap">
-        <div style="flex:2;min-width:240px;display:flex;flex-direction:column;gap:14px">${linhasHtml}</div>
-        <div style="width:1px;align-self:stretch;background:var(--border)"></div>
-        <div style="flex:1;min-width:120px;text-align:center">
-          <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">Total médio</div>
-          <div style="font-size:34px;font-weight:700;color:var(--text);line-height:1">${totalVal!==null?totalVal:'—'}<span style="font-size:12px;font-weight:500;color:var(--text2);margin-left:4px">dias</span></div>
-          <div style="font-size:11px;color:var(--text3);margin-top:6px">${totalSub}</div>
-        </div>
-      </div>
-    </div>`;
+  function linhaTotal(nome,sub,val){
+    return`<div style="display:flex;align-items:center;justify-content:space-between;background:var(--surface2);border-radius:8px;padding:12px 14px;margin:10px 0 4px"><div><div style="font-size:12.5px;font-weight:700;color:var(--text)">${nome}</div><div style="font-size:10.5px;color:var(--text3)">${sub}</div></div><div style="font-size:22px;font-weight:700;color:var(--text)">${val!==null?val+'<span style="font-size:11px;font-weight:500;margin-left:2px;color:var(--text2)">dias</span>':'—'}</div></div>`;
   }
   function compBar(total,segments){
     if(!total)return'';
@@ -1528,13 +1520,10 @@ function renderEstatisticas(){
   const alertasHtml=(alertasNeg.length||alertasPos.length)?`<div class="estat-section"><div class="estat-section-head">⚠️ Alertas negativos — ${anoLabel}</div><div class="estat-body">${alertasNeg.length?alertasNeg.map(a=>`<div style="padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-size:12px;font-weight:600">${a.proc} — ${a.etapa}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${a.texto}</div></div>`).join(''):'<div class="estat-note">Nenhum alerta negativo.</div>'}</div></div><div class="estat-section"><div class="estat-section-head">✅ Alertas positivos — ${anoLabel}</div><div class="estat-body">${alertasPos.length?alertasPos.map(a=>`<div style="padding:8px 0;border-bottom:1px solid var(--border)"><div style="font-size:12px;font-weight:600">${a.proc} — ${a.etapa}</div><div style="font-size:11px;color:var(--text2);margin-top:2px">${a.texto}</div></div>`).join(''):'<div class="estat-note">Nenhum alerta positivo.</div>'}</div></div>`:'';
 document.getElementById('estatisticas-conteudo').innerHTML=`
     <div class="stats" style="margin-bottom:1.25rem">
-      <div class="stat-card clickable" onclick="irParaLista('total')"><div class="stat-label">Total no período</div><div class="stat-value">${processosFiltrados.length+canceladosFilt.length}</div></div>
-      <div class="stat-card clickable" onclick="irParaLista('Imóvel')"><div class="stat-label">🏠 Imóvel</div><div class="stat-value">${processosFiltrados.filter(p=>p.tipo==='Imóvel').length}</div></div>
-      <div class="stat-card clickable" onclick="irParaLista('Veículo')"><div class="stat-label">🚗 Veículo</div><div class="stat-value">${processosFiltrados.filter(p=>p.tipo==='Veículo').length}</div></div>
-      <div class="stat-card clickable" style="border-color:var(--blue-border)" onclick="irParaLista('todos')"><div class="stat-label" style="color:var(--blue)">Em andamento</div><div class="stat-value" style="color:var(--blue)">${emAndamento.length}</div></div>
-      <div class="stat-card clickable" style="border-color:var(--green-border)" onclick="irParaLista('concluido')"><div class="stat-label" style="color:var(--green)">Concluídos</div><div class="stat-value" style="color:var(--green)">${concluidos.length}</div></div>
-      ${canceladosFilt.length?`<div class="stat-card clickable" style="border-color:var(--red-border)" onclick="irParaLista('cancelado')"><div class="stat-label" style="color:var(--red)">Cancelados</div><div class="stat-value" style="color:var(--red)">${canceladosFilt.length}</div></div>`:''}
-      <div class="stat-card" style="border-color:var(--green-border)"><div class="stat-label" style="color:var(--green)">Crédito total liberado</div><div class="stat-value" style="font-size:22px;color:var(--green)">${fmtR(totalGeral)}</div></div>
+      <div class="stat-card"><div class="stat-label">Total no período</div><div class="stat-value">${processosFiltrados.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Em andamento</div><div class="stat-value">${emAndamento.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Concluídos</div><div class="stat-value" style="color:var(--green)">${concluidos.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Crédito total liberado</div><div class="stat-value" style="font-size:22px;color:var(--green)">${fmtR(totalGeral)}</div></div>
     </div>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:1.25rem;flex-wrap:wrap">
       <div style="font-size:13px;font-weight:600;color:var(--text)">Ano de referência:</div>
@@ -1545,16 +1534,20 @@ document.getElementById('estatisticas-conteudo').innerHTML=`
     <div class="estat-section" style="margin-bottom:1.25rem">
       <div class="estat-section-head"><i class="ti ti-clock-hour-4"></i> Médias de prazo por etapa</div>
       <div class="estat-body">
-        ${todosImovel.length?painelPrazos('🏠','Imóvel',concImovel.length+' concluído'+(concImovel.length!==1?'s':'')+' · '+andImovel.length+' em andamento',
-          linhaPrazo('Aprovação','Aprov − Envio análise',medAprov,medTotal,'var(--chart-teal)')+
-          linhaPrazo('Com HS','Contrato − Envio análise',medHS,medTotal,'var(--chart-coral)')+
-          linhaPrazo('Após contrato','Entrada RI − Assinatura',medApos,medTotal,'var(--chart-purple)')+
-          linhaPrazo('No RI','Saída − Entrada RI',medRI,medTotal,'var(--chart-blue)'),
-          medTotal,'Pgto → Envio análise'):'<div class="estat-note" style="text-align:left;margin-bottom:14px">Nenhum processo de imóvel ainda.</div>'}
-        ${todosVeiculo.length?painelPrazos('🚗','Veículo',concVeiculo.length+' concluído'+(concVeiculo.length!==1?'s':'')+' · '+andVeiculo.length+' em andamento',
-          linhaPrazo('Aprovação','Aprov − Análise',medAprovV,medTotalV,'var(--chart-teal)')+
-          linhaPrazo('Após aprovação','Assinatura − Aprovação',medAposV,medTotalV,'var(--chart-coral)'),
-          medTotalV,'Pgto → Análise'):'<div class="estat-note" style="text-align:left">Nenhum processo de veículo ainda.</div>'}
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px">🏠 Imóvel · ${concImovel.length} concluído${concImovel.length!==1?'s':''} · ${andImovel.length} em andamento</div>
+        ${linhaPrazo('Aprovação','Aprov − Envio análise',medAprov,medTotal,'var(--chart-teal)')}
+        ${linhaPrazo('Com HS','Contrato − Envio análise',medHS,medTotal,'var(--chart-coral)')}
+        ${linhaPrazo('Após contrato','Entrada RI − Assinatura',medApos,medTotal,'var(--chart-purple)')}
+        ${linhaPrazo('No RI','Saída − Entrada RI',medRI,medTotal,'var(--chart-blue)')}
+        ${linhaTotal('Total médio','Pgto − Envio análise',medTotal)}
+        ${todosImovel.length===0?'<div class="estat-note" style="text-align:left;margin-top:2px">Nenhum processo de imóvel ainda.</div>':''}
+
+        <div style="font-size:11px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin:20px 0 2px;padding-top:14px;border-top:1px solid var(--border)">🚗 Veículo · ${concVeiculo.length} concluído${concVeiculo.length!==1?'s':''} · ${andVeiculo.length} em andamento</div>
+        ${linhaPrazo('Aprovação','Aprov − Análise',medAprovV,medTotalV,'var(--chart-teal)')}
+        ${linhaPrazo('Com HS','Vistoria, aprovação, envio assin., gravame',medHSV,medTotalV,'var(--chart-coral)')}
+        ${linhaPrazo('Após aprovação','Assinatura − Aprovação',medAposV,medTotalV,'var(--chart-purple)')}
+        ${linhaTotal('Total médio','Pgto − Análise',medTotalV)}
+        ${todosVeiculo.length===0?'<div class="estat-note" style="text-align:left;margin-top:2px">Nenhum processo de veículo ainda.</div>':''}
         <div class="estat-note">Médias com todos os processos que já passaram por cada etapa (concluídos e em andamento)</div>
       </div>
     </div>
@@ -1585,6 +1578,33 @@ document.getElementById('estatisticas-conteudo').innerHTML=`
       </div>
     </div>
 
+    <div class="estat-section">
+      <div class="estat-section-head"><i class="ti ti-list"></i> Visão geral</div>
+      <div class="estat-body">
+        <div class="estat-grid">
+          <div class="estat-card">
+            <div class="estat-card-label">Total processos</div>
+            <div class="estat-card-val">${processos.length}</div>
+          </div>
+          <div class="estat-card">
+            <div class="estat-card-label">Imóvel</div>
+            <div class="estat-card-val">${processos.filter(p=>p.tipo==='Imóvel').length}</div>
+          </div>
+          <div class="estat-card">
+            <div class="estat-card-label">Veículo</div>
+            <div class="estat-card-val">${processos.filter(p=>p.tipo==='Veículo').length}</div>
+          </div>
+          <div class="estat-card">
+            <div class="estat-card-label">Em andamento</div>
+            <div class="estat-card-val amber">${emAndamento.length}</div>
+          </div>
+          <div class="estat-card">
+            <div class="estat-card-label">Concluídos</div>
+            <div class="estat-card-val green">${concluidos.length}</div>
+          </div>
+        </div>
+      </div>
+    </div>
     ${gargHtml}${alertasHtml||""}${canceladosHtml||""}`;
 }
 function abrirEtapas(){_etapasAbertas=new Set();showView('view-detalhe');renderDetalhe()}
@@ -1910,12 +1930,19 @@ function renderRelatorio(){
     prazoRI2=dRI2Entrada?diasCorridos(dRI2Entrada,dRI2Saida||refFinal):null;
   } else {
     const etapaAnalise=p.etapas.find(et=>et.nome==='Processo em análise');
+    const etapaVistEnvio=p.etapas.find(et=>et.nome==='Envio link vistoria digital');
+    const etapaVistFeita=p.etapas.find(et=>et.nome==='Vistoria digital realizada');
     const etapaAprovV=p.etapas.find(et=>et.nome==='Aprovação');
     const etapaAssin=p.etapas.find(et=>et.nome==='Assinatura + Docs');
+    const etapaEnvioGravame=p.etapas.find(et=>et.nome==='Envio docs p/ inclusão gravame');
     const etapaGravame=p.etapas.find(et=>et.nome==='Inclusão gravame');
     const dAnalise=etapaAnalise?etapaAnalise.dataVal:'';
+    const dVistEnvio=etapaVistEnvio?etapaVistEnvio.dataVal:'';
+    const dVistFeita=etapaVistFeita?etapaVistFeita.dataVal:'';
     const dAprovV=etapaAprovV?etapaAprovV.dataVal:'';
-    const dAssinV=etapaAssin?etapaAssin.dataVal:'';
+    const dAssinInicio=etapaAssin?(etapaAssin.dataInicio||etapaAssin.dataVal):'';
+    const dAssinV=etapaAssin?(etapaAssin.dataFim||etapaAssin.dataVal):'';
+    const dEnvioGravame=etapaEnvioGravame?etapaEnvioGravame.dataVal:'';
     const dGravame=etapaGravame?etapaGravame.dataVal:'';
     prazoAprovacao=dAnalise&&dAprovV?diasCorridos(dAnalise,dAprovV):null;
     const prazoAssinatura=dAprovV&&dAssinV?diasCorridos(dAprovV,dAssinV):null;
@@ -1923,13 +1950,22 @@ function renderRelatorio(){
     prazoAposContrato=prazoAssinatura;
     prazoTotal=dAnalise&&refFinal?diasCorridos(dAnalise,refFinal):null;
     totalDias=emAndamento&&dAnalise?diasCorridos(dAnalise,today()):prazoTotal;
+    const trechoVist=dAnalise&&dVistEnvio?diasCorridos(dAnalise,dVistEnvio):null;
+    const trechoAprovV=dVistFeita&&dAprovV?diasCorridos(dVistFeita,dAprovV):null;
+    const trechoAssinEnvio=dAprovV&&dAssinInicio?diasCorridos(dAprovV,dAssinInicio):null;
+    const trechoGravamePgto=dEnvioGravame&&dPgto?diasCorridos(dEnvioGravame,dPgto):null;
+    prazoHS=[trechoVist,trechoAprovV,trechoAssinEnvio,trechoGravamePgto].every(v=>v!==null)?(trechoVist+trechoAprovV+trechoAssinEnvio+trechoGravamePgto):null;
   }
   const gargalosHtml='';
   const totalBox=totalDias!==null?`<div class="total-box${emAndamento?' andamento':''}"><span class="total-box-label"><i class="ti ti-calendar-stats"></i> Duração total${emAndamento?' (em andamento — até hoje)':' (envio à análise → pgto crédito)'}</span><span class="total-box-val">${totalDias} dias corridos</span></div>`:'';
   function marcoSub(dias,max){if(dias===null)return'';return dias<=max?`<div class="rel-metric-sub ok">Dentro do prazo</div>`:`<div class="rel-metric-sub alert">Acima do prazo (até ${max}d)</div>`;}
   const prazoOutras=(totalDias!==null&&prazoHS!==null&&prazoRI!==null)?Math.max(totalDias-prazoHS-prazoRI-(prazoRI2!==null?prazoRI2:0),0):null;
   const outrasBox=prazoOutras!==null?`<div class="rel-metric"><div class="rel-metric-label">Ação das partes</div><div class="rel-metric-val">${prazoOutras}<small> dias</small></div><div class="rel-metric-sub info">Assinaturas, docs, taxas</div></div>`:``;
-  const marcosBox=p.tipo==='Imóvel'?`<div class="rel-metric-grid"><div class="rel-metric"><div class="rel-metric-label">Com a HS (até 35 dias)</div><div class="rel-metric-val">${prazoHS!==null?prazoHS+'<small> dias</small>':'—'}</div>${marcoSub(prazoHS,35)}</div><div class="rel-metric"><div class="rel-metric-label">No RI (até 30 dias)</div><div class="rel-metric-val">${prazoRI!==null?prazoRI+'<small> dias</small>':'—'}</div>${marcoSub(prazoRI,30)}</div>${prazoRI2!==null?`<div class="rel-metric"><div class="rel-metric-label">No RI — 2º contrato (até 30 dias)</div><div class="rel-metric-val">${prazoRI2}<small> dias</small></div>${marcoSub(prazoRI2,30)}</div>`:``}${outrasBox}</div>`:'';
+  const prazoOutrasV=(totalDias!==null&&prazoHS!==null)?Math.max(totalDias-prazoHS,0):null;
+  const outrasBoxV=prazoOutrasV!==null?`<div class="rel-metric"><div class="rel-metric-label">Ação das partes</div><div class="rel-metric-val">${prazoOutrasV}<small> dias</small></div><div class="rel-metric-sub info">Vistoria do vendedor, assinaturas, taxas</div></div>`:``;
+  const marcosBox=p.tipo==='Imóvel'
+    ?`<div class="rel-metric-grid"><div class="rel-metric"><div class="rel-metric-label">Com a HS (até 35 dias)</div><div class="rel-metric-val">${prazoHS!==null?prazoHS+'<small> dias</small>':'—'}</div>${marcoSub(prazoHS,35)}</div><div class="rel-metric"><div class="rel-metric-label">No RI (até 30 dias)</div><div class="rel-metric-val">${prazoRI!==null?prazoRI+'<small> dias</small>':'—'}</div>${marcoSub(prazoRI,30)}</div>${prazoRI2!==null?`<div class="rel-metric"><div class="rel-metric-label">No RI — 2º contrato (até 30 dias)</div><div class="rel-metric-val">${prazoRI2}<small> dias</small></div>${marcoSub(prazoRI2,30)}</div>`:``}${outrasBox}</div>`
+    :(prazoHS!==null?`<div class="rel-metric-grid"><div class="rel-metric"><div class="rel-metric-label">Com a HS</div><div class="rel-metric-val">${prazoHS}<small> dias</small></div><div class="rel-metric-sub info">Análise, vistoria, aprovação e gravame</div></div>${outrasBoxV}</div>`:'');
   function relStepper(milestones){
     const doneCount=milestones.filter(m=>m.date).length;
     const frac=milestones.length>1?Math.max(0,Math.min(1,(doneCount-1)/(milestones.length-1))):0;
